@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 3</title>
+</head>
+
+<body>
+    <p>Ejercicio 3</p>
+    <div>
+        <input type="text" id="cuadro1" placeholder="Ingrese numero" />
+        <input type="text" id="cuadro2" placeholder="   +" size="1" />
+        <input type="text" id="cuadro3" placeholder="Ingrese numero" />
+    </div>
+    <input type="button" value="Sumar" onclick="sumar()" />
+
+    <script>
+        function sumar() {
+            // Coge los valores del cuadro 1 y del 2
+            let num1 = document.getElementById("cuadro1").value;
+            let num2 = document.getElementById("cuadro3").value;
+
+            // Pasa de string a float
+            num1 = parseFloat(num1);
+            num2 = parseFloat(num2);
+
+            // Suma los numeros
+            let resultado = num1 + num2;
+
+            // Muestra el resultado
+            alert("El resultado es: " + resultado);
+        }
+    </script>
+
+</body>
+
+</html>
