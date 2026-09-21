@@ -22,7 +22,7 @@
 
             // Crea las celdas
             for (let i = 0; i < 2; i++) {
-                // Crea las hileras de la tabla
+                // Crea las filas de la tabla
                 let fila = document.createElement("tr");
 
                 for (let j = 0; j < 1; j++) {
@@ -30,7 +30,7 @@
                     // hace que la celda tenga texto y no este vacia,
                     // ubica el elemento <td> al final de las filas de la tabla
                     let celda = document.createElement("td");
-                    let textoCelda = document.createTextNode("____________ ")
+                    let textoCelda = document.createTextNode("Celda " + i);
                     celda.appendChild(textoCelda);
                     fila.appendChild(celda);
                 }

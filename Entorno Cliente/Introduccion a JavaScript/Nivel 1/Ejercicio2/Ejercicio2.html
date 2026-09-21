@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ejercicio 2</title>
+</head>
+
+<body>
+    <p>Ejercicio 2</p>
+    <input type="button" value="Generar tabla" onclick="genera_tabla()" />
+
+    <script>
+        function genera_tabla() {
+            // Obtener la referencia del elemento body
+            let body = document.getElementsByTagName("body")[0];
+
+            // Crea el elemento <table> y un elemento <tbody>
+            let tabla = document.createElement("table");
+            let tblBody = document.createElement("tbody");
+
+            //Estilo de la tabla
+            const estiloTabla = "color: blue; font-size: 15px;";
+
+            // Crea las celdas
+            for (let i = 0; i < 2; i++) {
+                // Crea las filas de la tabla
+                let fila = document.createElement("tr");
+
+                for (let j = 0; j < 1; j++) {
+                    // Crea un elemento <td> y un elemento de texto, 
+                    // hace que la celda tenga texto y no este vacia,
+                    // ubica el elemento <td> al final de las filas de la tabla
+                    let celda = document.createElement("td");
+                    let textoCelda = document.createTextNode("Celda " + i);
+                    celda.appendChild(textoCelda);
+                    fila.appendChild(celda);
+                }
+
+                // Añade la fila al final de la tabla
+                tblBody.appendChild(fila);
+            }
+
+            tabla.style = estiloTabla;
+
+            // Pone el <tbody> debajo del elemento <table>
+            tabla.appendChild(tblBody);
+            body.appendChild(tabla);
+            // Modifica el borde de la tabla
+            tabla.setAttribute("border", "2");
+        }
+    </script>
+</body>
+
+</html>
