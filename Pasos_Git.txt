@@ -1,0 +1,119 @@
+1. Abre la terminal dentro de tu proyecto
+
+Por ejemplo:
+
+cd ruta/de/tu/proyecto
+
+2. Descarga lo último de GitHub
+
+SIEMPRE antes de empezar a trabajar:
+
+git pull
+
+Así te aseguras de tener los últimos cambios que hiciste desde el otro ordenador.
+
+💻 Mientras trabajas
+
+Trabaja normalmente y guarda tus archivos.
+
+Puedes comprobar qué has modificado con:
+
+git status
+📤 Cuando termines de trabajar
+
+Haz siempre estos 3 comandos:
+
+3. Preparar los cambios
+git add .
+
+4. Crear un commit
+git commit -m "Cambios del día"
+
+Puedes cambiar "Cambios del día" por algo más descriptivo:
+
+git commit -m "Terminado ejercicio 5"
+
+5. Subirlo a GitHub
+git push
+
+📋 Tu rutina para memorizar
+🟢 AL EMPEZAR
+git pull
+
+⬇️
+
+Trabajas
+
+⬇️
+
+🔴 AL TERMINAR
+git add .
+git commit -m "Lo que he hecho"
+git push
+
+Y ya está.
+
+🏫 Ejemplo real
+Lunes — instituto
+
+Llegas y haces:
+
+git pull
+
+Trabajas durante la clase.
+
+Al terminar:
+
+git add .
+git commit -m "Trabajo del lunes"
+git push
+
+Ahora GitHub tiene tu trabajo.
+
+Lunes por la tarde — casa
+
+Antes de empezar:
+
+git pull
+
+Te aparecerán los cambios que hiciste en el instituto.
+
+Trabajas en casa.
+
+Al terminar:
+
+git add .
+git commit -m "Trabajo en casa"
+git push
+Martes — instituto
+
+Otra vez:
+
+git pull
+
+Y tendrás lo que hiciste el lunes en casa.
+
+⚠️ Regla de oro
+
+Nunca empieces a trabajar en un ordenador sin hacer primero git pull.
+
+Y nunca te vayas de un ordenador sin hacer git push si quieres que tus cambios estén disponibles en el otro.
+
+Tu rutina puede quedarse así:
+
+        EMPIEZO
+           ↓
+       git pull
+           ↓
+        TRABAJO
+           ↓
+       git add .
+           ↓
+       git commit
+           ↓
+       git push
+           ↓
+          FIN
+
+hola
+
