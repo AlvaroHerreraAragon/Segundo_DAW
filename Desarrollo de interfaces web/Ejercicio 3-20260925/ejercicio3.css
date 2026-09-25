@@ -9,13 +9,16 @@ ul, ul li {
 	padding: 0;
 	list-style: none;
 }
+
 h1, h2, h3, p, form {
 	margin: 0;
 	padding: 0;
 }
+
 .clear {
 	clear: both;
 }
+
 img {
 	border: none;
 }
@@ -24,7 +27,6 @@ img {
 #contenedor {
 	width: 90%;
 	max-width: 900px;
-	width: expression(document.body.clientWidth > 901? "900px": "auto");
 	margin: 0 auto;
 }
 
@@ -35,25 +37,31 @@ img {
 #cabecera {
 	clear: both;
 }
+
 #menu {
 	clear: both;
 }
+
 #lateral {
 	float: left;
 	width: 20%;
 }
+
 #contenido {
 	float: right;
 	width: 78%;
 }
+
 #contenido #principal {
 	float: left;
 	width: 78%;
 }
+
 #contenido #secundario {
 	float: right;
 	width: 20%;
 }
+
 #pie {
 	clear: both;
 }
@@ -62,6 +70,7 @@ img {
 #cabecera #logo {
 	float: left;
 }
+
 #cabecera #buscador {
 	float: right;
 }
@@ -82,6 +91,7 @@ img {
 #pie .enlaces {
 	float: left;
 }
+
 #pie .copyright {
 	float: right;
 }
@@ -91,6 +101,32 @@ img {
  sean necesarios.
  ================================================================== */
 
+#cabecera {
+	padding: 1em;
+}
 
+#menu {
+	padding: 0.5em;
+	margin-bottom: 0.5em;
+}
 
+#noticias {
+	padding: 0.5em;
+}
 
+#publicidad {
+	padding: 0.5em;
+}
+
+#principal {
+	padding: 0.5em;
+}
+
+#secundario {
+	padding: 0.5em;
+}
+
+#pie {
+	padding-bottom: 0.5em;
+	padding-top: 0.5em;
+}
