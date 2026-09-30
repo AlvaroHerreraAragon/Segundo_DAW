@@ -10,9 +10,175 @@
 		</style>
 		<script src="Utilidades.js"></script>
 		<script>
+		window.addEventListener("load", iniciar);
 
-		
-			
+		function iniciar() {
+			const formulario = document.getElementById("formulario_1");
+
+			formulario.addEventListener("submit", function (evento) {
+				evento.preventDefault();
+
+				let valido = true;
+				let primerCampoErroneo = null;
+
+				document.getElementById("info_nombre").textContent = "";
+				document.getElementById("info_dni").textContent = "";
+				document.getElementById("info_sexo").textContent = "";
+				document.getElementById("info_sugerencia").textContent = "";
+				document.getElementById("info_fecha").textContent = "";
+
+				if (!validarNombre()) {
+					valido = false;
+
+					if (primerCampoErroneo === null) {
+						primerCampoErroneo = document.getElementById("nombre");
+					}
+				}
+
+				if (!validarDNI()) {
+					valido = false;
+
+					if (primerCampoErroneo === null) {
+						primerCampoErroneo = document.getElementById("dni");
+					}
+				}
+
+				if (!validarSexo()) {
+					valido = false;
+
+					if (primerCampoErroneo === null) {
+						primerCampoErroneo = document.getElementById("sexo");
+					}
+				}
+
+				if (!validarSugerencia()) {
+					valido = false;
+
+					if (primerCampoErroneo === null) {
+						primerCampoErroneo = document.getElementById("sugerencia");
+					}
+				}
+
+				if(!validarFecha()) {
+					valido = false;
+
+					if(primerCampoErroneo == null) {
+						primerCampoErroneo = document.getElementById("fecha");
+					}
+				}
+
+				if (!valido) {
+					primerCampoErroneo.focus();
+				} else {
+					alert("Formulario enviado correctamente.");
+					formulario.submit();
+				}
+			});
+		}
+
+		function validarNombre() {
+			const nombre = document.getElementById("nombre").value.trim();
+			const info = document.getElementById("info_nombre");
+
+			if (nombre === "") {
+				info.textContent = " El nombre es obligatorio.";
+				return false;
+			}
+
+			if (nombre.length < 2) {
+				info.textContent = " El nombre debe tener al menos 2 letras.";
+				return false;
+			}
+
+			const expresion = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/;
+
+			if (!expresion.test(nombre)) {
+				info.textContent = " El nombre solo puede contener letras.";
+				return false;
+			}
+
+			return true;
+		}
+
+		function validarDNI() {
+			const dni = document.getElementById("dni").value.trim().toUpperCase();
+			const info = document.getElementById("info_dni");
+
+			if (dni === "") {
+				info.textContent = " El NIF es obligatorio.";
+				return false;
+			}
+
+			const expresion = /^[0-9]{8}[A-Z]$/;
+
+			if (!expresion.test(dni)) {
+				info.textContent = " El NIF debe tener 8 números y una letra.";
+				return false;
+			}
+
+			return true;
+		}
+
+		function validarSexo() {
+			const sexo = document.getElementById("sexo").value;
+			const info = document.getElementById("info_sexo");
+
+			if (sexo === "") {
+				info.textContent = " Debes seleccionar una opción.";
+				return false;
+			}
+
+			return true;
+		}
+
+		function validarSugerencia() {
+			const sugerencia = document.getElementById("sugerencia").value.trim();
+			const info = document.getElementById("info_sugerencia");
+
+			if (sugerencia === "") {
+				info.textContent = " La sugerencia es obligatoria.";
+				return false;
+			}
+
+			return true;
+		}
+
+		function validarFecha() {
+			const f_dia = document.getElementById("f_dia").value;
+			const f_mes = document.getElementById("f_mes").value;
+			const f_ano = document.getElementById("f_ano").value;
+			const info_fecha = document.getElementById("info_fecha");
+
+			if(f_dia === "" || f_mes === "" || f_ano === "") {
+				info_fecha.textContent = " La fecha es obligatoria"
+			}
+
+			const dia = Number(f_dia);
+			const mes = Number(f_mes);
+			const ano = Number(f_ano);
+
+			if(dia < 1 || dia > 31) {
+				return false;
+			}
+
+			if(mes < 1 || mes > 12) {
+				return false;
+			}
+
+			const fecha = new Date(f_dia, f_mes - 1, f_ano);
+
+			if(fecha.getDate() != f_dia) {
+				return false;
+			}
+
+			if(fecha.getMonth() != f_mes -1) {
+				return false;
+			}
+
+			if(fecha.getFullYear() != f_ano) {
+				return false;
+			}
+		}
 		</script>
 	</head>
 
