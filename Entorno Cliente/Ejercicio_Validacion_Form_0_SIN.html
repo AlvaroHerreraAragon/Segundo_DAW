@@ -1,64 +1,164 @@
 <!DOCTYPE html>
-	<head>
-		<meta charset="UTF-8"/>
-		<title>Validar Formularios</title>
-		<style type="text/css">
-			span {
-				color: red;
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Validar Formularios</title>
+	<style type="text/css">
+		span {
+			color: red;
+		}
+	</style>
+	<script src="Utilidades.js"></script>
+	<script>
+		window.addEventListener("load", iniciar);
+
+		function iniciar() {
+			const formulario = document.getElementById("formulario_1");
+
+			formulario.addEventListener("submit", function (evento) {
+				evento.preventDefault();
+
+				let valido = true;
+
+				document.getElementById("info_nombre").textContent = "";
+				document.getElementById("info_dni").textContent = "";
+				document.getElementById("info_sexo").textContent = "";
+				document.getElementById("info_sugerencia").textContent = "";
+
+				if (!validarNombre()) {
+					valido = false;
+				}
+
+				if (!validarDNI()) {
+					valido = false;
+				}
+
+				if (!validarSexo()) {
+					valido = false;
+				}
+
+				if (!validarSugerencia()) {
+					valido = false;
+				}
+
+				if (valido) {
+					alert("Formulario enviado correctamente.");
+					formulario.submit();
+				}
+			});
+		}
+
+		function validarNombre() {
+			const nombre = document.getElementById("nombre").value.trim();
+			const info = document.getElementById("info_nombre");
+
+			if (nombre === "") {
+				info.textContent = " El nombre es obligatorio.";
+				return false;
 			}
-			
-		</style>
-		<script src="Utilidades.js"></script>
-		<script>
 
-					
-			
-			
-		</script>
-	</head>
+			if (nombre.length < 2) {
+				info.textContent = " El nombre debe tener al menos 2 letras.";
+				return false;
+			}
 
-	<body>
+			const expresion = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/;
 
-		<h1>Ejercicio Validación de Formularios</h1>
-		<form id="formulario_1">
+			if (!expresion.test(nombre)) {
+				info.textContent = " El nombre solo puede contener letras.";
+				return false;
+			}
+
+			return true;
+		}
+
+		function validarDNI() {
+			const dni = document.getElementById("dni").value.trim().toUpperCase();
+			const info = document.getElementById("info_dni");
+
+			if (dni === "") {
+				info.textContent = " El NIF es obligatorio.";
+				return false;
+			}
+
+			const expresion = /^[0-9]{8}[A-Z]$/;
+
+			if (!expresion.test(dni)) {
+				info.textContent = " El NIF debe tener 8 números y una letra.";
+				return false;
+			}
+
+			return true;
+		}
+
+		function validarSexo() {
+			const sexo = document.getElementById("sexo").value;
+			const info = document.getElementById("info_sexo");
+
+			if (sexo === "") {
+				info.textContent = " Debes seleccionar una opción.";
+				return false;
+			}
+
+			return true;
+		}
+
+		function validarSugerencia() {
+			const sugerencia = document.getElementById("sugerencia").value.trim();
+			const info = document.getElementById("info_sugerencia");
+
+			if (sugerencia === "") {
+				info.textContent = " La sugerencia es obligatoria.";
+				return false;
+			}
+
+			return true;
+		}
+
+	</script>
+</head>
+
+<body>
+
+	<h1>Ejercicio Validación de Formularios</h1>
+	<form id="formulario_1">
 		<p>
-			<h3>Formulario de Registro:</h3>
-			<label for="nombre">Nombre: </label>
-			<input type="text" name="nombre" id="nombre" maxlength="25" size="15" />
-			<span id="info_nombre"></span>
-			<div>(Mínimo 2 letras)</div>
-			<br><br>
-			
-			<label for="dni">NIF: </label>
-			<input type="text" name="dni" id="dni" maxlength="9" size="9" />
-			<span id="info_dni"></span>
-			<br><br><br>
-			
-      <label>Sexo: </label>
-			<select id="sexo">
-				<option value="">Selecciona una opción</option>
-				<option value="F">Femenino</option>
-				<option value="M">Masculino</option>
-				<option value="Y">Ya quisiera yo</option>
-			</select>
-			<span id="info_sexo"></span>
-      
-      <br><br><br>
-      <label for="sugerencia">Alguna sugerencia: </label>
-      <textarea id="sugerencia" name="sugerencia"></textarea>
-			<span id="info_sugerencia"></span>
-      <br><br>
+		<h3>Formulario de Registro:</h3>
+		<label for="nombre">Nombre: </label>
+		<input type="text" name="nombre" id="nombre" maxlength="25" size="15" />
+		<span id="info_nombre"></span>
+		<div>(Mínimo 2 letras)</div>
+		<br><br>
+
+		<label for="dni">NIF: </label>
+		<input type="text" name="dni" id="dni" maxlength="9" size="9" />
+		<span id="info_dni"></span>
+		<br><br><br>
+
+		<label>Sexo: </label>
+		<select id="sexo">
+			<option value="">Selecciona una opción</option>
+			<option value="F">Femenino</option>
+			<option value="M">Masculino</option>
+			<option value="Y">Ya quisiera yo</option>
+		</select>
+		<span id="info_sexo"></span>
+
+		<br><br><br>
+		<label for="sugerencia">Alguna sugerencia: </label>
+		<textarea id="sugerencia" name="sugerencia"></textarea>
+		<span id="info_sugerencia"></span>
+		<br><br>
 		</p>
 		<p><b>Todos los campos son obligatorios.</b></p>
 		<br>
 		<p>
-			<input type="submit" value="ENVIAR" >
+			<input type="submit" value="ENVIAR">
 			<br><br>
 			<input type="reset" value="Limpiar">
-			
+
 		</p>
-		</form>
-	</body>
+	</form>
+</body>
+
 </html>
-
-
