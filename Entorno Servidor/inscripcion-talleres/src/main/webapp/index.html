@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Formulario</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <h1>Inscripcion a talleres</h1>
+
+        <form action="inscripcion" method="post">
+
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" maxlength="40" required>
+            <br><br>
+
+            <label for="edad">Franja de edad</label>
+            <select id="edad" name="edad">
+                <option value="vacia0"></option>
+                <option value="rango1">12-15</option>
+                <option value="rango2">16-17</option>
+                <option value="rango3">18+</option>
+            </select>
+            <br><br>
+            
+            <label for="taller">Taller</label>
+            <select id="taller" name="taller">
+                <option value="vacia1"></option>
+                <option value="fotografia">Fotografia</option>
+                <option value="robotica">Robotica</option>
+                <option value="teatro">Teatro</option>
+            </select>
+            <br><br>
+
+            <input type="radio" id="btn1" name="turno" value="manana">
+            <label for="btn1">Mañana</label>
+            <input type="radio" id="btn2" name="turno" value="tarde">
+            <label for="btn2">Tarde</label>
+            <br><br>
+
+            <label>
+                <input type="checkbox" name="normas" value="aceptadas">
+                Acepto los terminos y condiciones
+            </label>
+            <br><br>
+
+            <input type="submit" value="Enviar formulario">
+
+        </form>
+    </body>
+</html>
