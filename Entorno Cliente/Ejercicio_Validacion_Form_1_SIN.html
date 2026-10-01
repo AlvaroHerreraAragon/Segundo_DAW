@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<html lang="es">
 
 <head>
 	<meta charset="UTF-8" />
@@ -8,7 +9,7 @@
 			color: red;
 		}
 	</style>
-	<script src="Utilidades.js"></script>
+
 	<script>
 		window.addEventListener("load", iniciar);
 
@@ -28,6 +29,7 @@
 				document.getElementById("info_sugerencia").textContent = "";
 				document.getElementById("info_fecha").textContent = "";
 
+				// Validar nombre
 				if (!validarNombre()) {
 					valido = false;
 
@@ -36,6 +38,7 @@
 					}
 				}
 
+				// Validar apellidos
 				if (!validarApellido()) {
 					valido = false;
 
@@ -44,7 +47,7 @@
 					}
 				}
 
-
+				// Validar DNI
 				if (!validarDNI()) {
 					valido = false;
 
@@ -53,6 +56,7 @@
 					}
 				}
 
+				// Validar sexo
 				if (!validarSexo()) {
 					valido = false;
 
@@ -61,6 +65,7 @@
 					}
 				}
 
+				// Validar sugerencia
 				if (!validarSugerencia()) {
 					valido = false;
 
@@ -69,6 +74,7 @@
 					}
 				}
 
+				// Validar fecha
 				if (!validarFecha()) {
 					valido = false;
 
@@ -77,206 +83,305 @@
 					}
 				}
 
+				// Resultado final
 				if (!valido) {
 					primerCampoErroneo.focus();
 				} else {
 					alert("Formulario enviado correctamente.");
+
 					formulario.submit();
 				}
 			});
 		}
+
+
+		// =========================
+		// VALIDAR NOMBRE
+		// =========================
 
 		function validarNombre() {
 			const nombre = document.getElementById("nombre").value.trim();
 			const info = document.getElementById("info_nombre");
 
 			if (nombre === "") {
-				info.textContent = " El nombre es obligatorio.";
+				info.textContent = "El nombre es obligatorio.";
 				return false;
 			}
 
 			if (nombre.length < 2) {
-				info.textContent = " El nombre debe tener al menos 2 letras.";
+				info.textContent = "El nombre debe tener al menos 2 letras.";
 				return false;
 			}
 
 			const expresion = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/;
 
 			if (!expresion.test(nombre)) {
-				info.textContent = " El nombre solo puede contener letras.";
+				info.textContent = "El nombre solo puede contener letras.";
 				return false;
 			}
 
 			return true;
 		}
+
+
+		// =========================
+		// VALIDAR APELLIDOS
+		// =========================
 
 		function validarApellido() {
 			const apellido = document.getElementById("apellidos").value.trim();
 			const info = document.getElementById("info_apellidos");
 
 			if (apellido === "") {
-				info.textContent = " El apellido es obligatorio.";
+				info.textContent = "El apellido es obligatorio.";
 				return false;
 			}
 
 			if (apellido.length < 4) {
-				info.textContent = " El apellido debe tener al menos 4 letras.";
+				info.textContent = "El apellido debe tener al menos 4 letras.";
 				return false;
 			}
 
 			const expresion = /^[A-Za-zÁÉÍÓÚáéíóúÑñÜü\s]+$/;
 
 			if (!expresion.test(apellido)) {
-				info.textContent = " El apellido solo puede contener letras.";
+				info.textContent = "El apellido solo puede contener letras.";
 				return false;
 			}
 
 			return true;
 		}
+
+
+		// =========================
+		// VALIDAR DNI
+		// =========================
 
 		function validarDNI() {
 			const dni = document.getElementById("dni").value.trim().toUpperCase();
 			const info = document.getElementById("info_dni");
 
 			if (dni === "") {
-				info.textContent = " El NIF es obligatorio.";
+				info.textContent = "El NIF es obligatorio.";
 				return false;
 			}
 
 			const expresion = /^[0-9]{8}[A-Z]$/;
 
 			if (!expresion.test(dni)) {
-				info.textContent = " El NIF debe tener 8 números y una letra.";
+				info.textContent = "El NIF debe tener 8 números y una letra.";
 				return false;
 			}
 
 			return true;
 		}
+
+
+		// =========================
+		// VALIDAR SEXO
+		// =========================
 
 		function validarSexo() {
 			const sexo = document.getElementById("sexo").value;
 			const info = document.getElementById("info_sexo");
 
 			if (sexo === "") {
-				info.textContent = " Debes seleccionar una opción.";
+				info.textContent = "Debes seleccionar una opción.";
 				return false;
 			}
 
 			return true;
 		}
+
+
+		// =========================
+		// VALIDAR SUGERENCIA
+		// =========================
 
 		function validarSugerencia() {
 			const sugerencia = document.getElementById("sugerencia").value.trim();
 			const info = document.getElementById("info_sugerencia");
 
 			if (sugerencia === "") {
-				info.textContent = " La sugerencia es obligatoria.";
+				info.textContent = "La sugerencia es obligatoria.";
 				return false;
 			}
 
 			return true;
 		}
 
+
+		// =========================
+		// VALIDAR FECHA
+		// =========================
+
 		function validarFecha() {
-			const f_dia = document.getElementById("f_dia").value;
-			const f_mes = document.getElementById("f_mes").value;
-			const f_ano = document.getElementById("f_ano").value;
+			const f_dia = document.getElementById("f_dia").value.trim();
+			const f_mes = document.getElementById("f_mes").value.trim();
+			const f_ano = document.getElementById("f_ano").value.trim();
+
 			const info_fecha = document.getElementById("info_fecha");
 
+			// Comprobar que todos los campos estén rellenos
 			if (f_dia === "" || f_mes === "" || f_ano === "") {
-				info_fecha.textContent = " La fecha es obligatoria";
+				info_fecha.textContent = "La fecha es obligatoria.";
 				return false;
 			}
+
+			// Convertir los valores a números
 			const dia = Number(f_dia);
 			const mes = Number(f_mes);
 			const ano = Number(f_ano);
 
+			// Comprobar que sean números
+			if (isNaN(dia) || isNaN(mes) || isNaN(ano)) {
+				info_fecha.textContent = "La fecha debe contener números.";
+				return false;
+			}
+
+			// Comprobar día
 			if (dia < 1 || dia > 31) {
-				info_fecha = "El dia no es valido";
+				info_fecha.textContent = "El día no es válido.";
 				return false;
 			}
 
+			// Comprobar mes
 			if (mes < 1 || mes > 12) {
-				info_fecha = "El mes no es valido";
+				info_fecha.textContent = "El mes no es válido.";
 				return false;
 			}
 
+			// Comprobar año
+			if (f_ano.length !== 4) {
+				info_fecha.textContent = "El año debe tener 4 cifras.";
+				return false;
+			}
+
+			// Crear objeto fecha
 			const fecha = new Date(ano, mes - 1, dia);
 
+			// Comprobar que la fecha realmente existe
 			if (fecha.getDate() !== dia) {
-				info_fecha.textContent = "La fecha no es valida";
+				info_fecha.textContent = "La fecha no es válida.";
 				return false;
 			}
 
 			if (fecha.getMonth() !== mes - 1) {
-				info_fecha.textContent = "La fecha no es valida";
+				info_fecha.textContent = "La fecha no es válida.";
 				return false;
 			}
 
 			if (fecha.getFullYear() !== ano) {
-				info_fecha.textContent = "La fecha no es valida";
+				info_fecha.textContent = "La fecha no es válida.";
 				return false;
 			}
 
 			return true;
 		}
 	</script>
+
 </head>
 
 <body>
-
 	<h1>Ejercicio Validación de Formularios</h1>
-	<form id="formulario_1">
+
+	<form id="formulario_1" method="post">
+
 		<p>
+
 		<h3>Formulario de Registro:</h3>
+
 		<label for="nombre">Nombre: </label>
 		<input type="text" name="nombre" id="nombre" maxlength="25" size="15" />
+
 		<span id="info_nombre"></span>
+
 		<div>(Mínimo 2 letras)</div>
+
 		<br><br>
+
 
 		<label for="apellidos">Apellidos: </label>
 		<input type="text" name="apellidos" id="apellidos" maxlength="50" size="25" />
+
 		<span id="info_apellidos"></span>
+
 		<div>(Mínimo 4 letras)</div>
+
 		<br><br>
+
 
 		<label for="dni">NIF: </label>
 		<input type="text" name="dni" id="dni" maxlength="9" size="9" />
+
 		<span id="info_dni"></span>
+
 		<br><br><br>
 
-		<label>Sexo: </label>
-		<select id="sexo">
+
+		<label for="sexo">Sexo: </label>
+
+		<select id="sexo" name="sexo">
+
 			<option value="">Selecciona una opción</option>
 			<option value="F">Femenino</option>
 			<option value="M">Masculino</option>
 			<option value="Y">Ya quisiera yo</option>
+
 		</select>
+
 		<span id="info_sexo"></span>
+
 		<br><br><br>
+
 
 		<label for="f_dia">Fecha: </label>
-		<input type="text" id="f_dia" maxlength="2" size="1" /> /
-		<input type="text" id="f_mes" maxlength="2" size="1" /> /
-		<input type="text" id="f_ano" maxlength="4" size="3" /> (dd/mm/aaaa)
+
+		<input type="text" id="f_dia" name="f_dia" maxlength="2" size="1" />
+
+		/
+
+		<input type="text" id="f_mes" name="f_mes" maxlength="2" size="1" />
+
+		/
+
+		<input type="text" id="f_ano" name="f_ano" maxlength="4" size="3" />
+
+		(dd/mm/aaaa)
+
 		<span id="info_fecha"></span>
+
 		<br><br><br>
 
+
 		<label for="sugerencia">Alguna sugerencia: </label>
+
 		<textarea id="sugerencia" name="sugerencia"></textarea>
+
 		<span id="info_sugerencia"></span>
+
 		<br><br>
+
 		</p>
-		<p><b>Todos los campos son obligatorios.</b></p>
-		<br>
+
 		<p>
+			<b>Todos los campos son obligatorios.</b>
+		</p>
+
+		<br>
+
+		<p>
+
 			<input type="submit" value="ENVIAR">
+
 			<br><br>
+
 			<input type="reset" value="Limpiar">
 
 		</p>
+
 	</form>
+
 </body>
 
 </html>
