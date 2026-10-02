@@ -1,0 +1,641 @@
+<!DOCTYPE html
+    PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Ejercicio de selectores</title>
+
+    <style type="text/css">
+        /* ESTILOS GENERALES */
+
+        body {
+            width: 980px;
+            margin: 0 auto;
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            color: #000;
+            background-color: white;
+        }
+
+        a {
+            color: #0000cc;
+            text-decoration: underline;
+        }
+
+        p {
+            line-height: 1.4em;
+        }
+
+
+        /* CABECERA */
+
+        #cabecera {
+            height: 65px;
+            position: relative;
+        }
+
+        #logo {
+            position: absolute;
+            left: 10px;
+            top: 8px;
+        }
+
+        #logo h1 {
+            margin: 0;
+            color: #cc7833;
+            font-size: 24px;
+            font-weight: normal;
+        }
+
+        #buscar {
+            position: absolute;
+            right: 10px;
+            top: 12px;
+        }
+
+        #buscar label {
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        #buscador {
+            width: 150px;
+            height: 15px;
+            border: 1px solid #bbb;
+        }
+
+
+        /* BARRA AZUL */
+
+        #barra {
+            height: 24px;
+            background-color: #294aa3;
+            border: 1px solid #1e3e94;
+            padding-left: 8px;
+            line-height: 24px;
+        }
+
+        #barra a {
+            color: white;
+            font-weight: bold;
+        }
+
+
+        /* CONTENEDOR PRINCIPAL */
+
+        #contenedor {
+            display: flex;
+            align-items: flex-start;
+            margin-top: 8px;
+        }
+
+
+        /* COLUMNA IZQUIERDA */
+
+        #izquierda {
+            width: 190px;
+            margin-right: 15px;
+        }
+
+        .bloque {
+            border: 1px solid #c5c5c5;
+            padding: 7px;
+            margin-bottom: 10px;
+        }
+
+        .bloque h3 {
+            margin: 0 0 5px 0;
+            color: #003399;
+            font-size: 15px;
+            text-decoration: underline;
+        }
+
+        .bloque a {
+            display: block;
+            line-height: 16px;
+        }
+
+
+        /* PUBLICIDAD */
+
+        #publicidad {
+            border: 1px dashed #e0a832;
+            background-color: #fffbea;
+            padding: 7px;
+        }
+
+        #publicidad h3 {
+            margin: 0 0 5px 0;
+            color: #003399;
+            font-size: 15px;
+            text-decoration: underline;
+        }
+
+        #publicidad p {
+            margin: 6px 0;
+        }
+
+
+        /* CONTENIDO CENTRAL */
+
+        #contenido {
+            width: 570px;
+            margin-right: 15px;
+        }
+
+        .articulo {
+            margin-bottom: 12px;
+            overflow: hidden;
+        }
+
+        .articulo h2 {
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 18px;
+            margin: 0 0 3px 0;
+            line-height: 20px;
+        }
+
+        .articulo img {
+            width: 95px;
+            height: 95px;
+            float: left;
+            margin: 3px 8px 3px 0;
+            border: 1px solid #777;
+        }
+
+        .articulo p {
+            margin: 4px 0;
+        }
+
+        .destacado {
+            font-weight: bold;
+        }
+
+
+        /* TABLA */
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-family: Georgia, "Times New Roman", serif;
+        }
+
+        caption {
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 4px;
+        }
+
+        th,
+        td {
+            border: 1px solid #aab7c7;
+            padding: 7px;
+            text-align: left;
+        }
+
+        thead,
+        tfoot {
+            background-color: #dce9f6;
+        }
+
+        th {
+            font-weight: bold;
+        }
+
+        thead th,
+        tfoot th {
+            text-align: center;
+        }
+
+
+        /* BLOQUE ADICIONAL */
+
+        #adicional {
+            border: 1px dashed #e0a832;
+            background-color: #fffbea;
+            padding: 10px;
+            margin-top: 12px;
+        }
+
+        #adicional p {
+            margin: 7px 0;
+        }
+
+        #adicional span {
+            background-color: #dcebd4;
+            padding: 1px 3px;
+        }
+
+        #adicional #especial {
+            background-color: #e4d4f5;
+        }
+
+
+        /* COLUMNA DERECHA */
+
+        #derecha {
+            width: 160px;
+        }
+
+        .bloqueDerecho {
+            border: 1px solid #d88943;
+            padding: 4px;
+            margin-bottom: 10px;
+        }
+
+        .bloqueDerecho h3 {
+            background-color: #e8a56e;
+            font-family: Georgia, "Times New Roman", serif;
+            font-size: 18px;
+            margin: 0;
+            padding: 6px;
+        }
+
+        .bloqueDerecho p {
+            margin: 8px 4px;
+            line-height: 1.4em;
+        }
+
+        .bloqueDerecho a {
+            display: block;
+            margin: 5px;
+        }
+
+
+        /* PIE DE PÁGINA */
+
+        #pie {
+            clear: both;
+            height: 35px;
+            border: 1px solid #ccc;
+            background-color: #f5f5f5;
+            margin-top: 8px;
+            line-height: 35px;
+            padding: 0 8px;
+        }
+
+        #enlacesPie {
+            float: left;
+        }
+
+        #copyright {
+            float: right;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <!-- CABECERA -->
+
+    <div id="cabecera">
+
+        <div id="logo">
+            <h1>Logotipo</h1>
+        </div>
+
+        <div id="buscar">
+            <label for="buscador">Buscar</label>
+            <input type="text" id="buscador" />
+        </div>
+
+    </div>
+
+
+    <!-- BARRA AZUL -->
+
+    <div id="barra">
+        <a href="#">Lorem ipsum dolor sit amet</a>
+    </div>
+
+
+    <!-- CONTENEDOR -->
+
+    <div id="contenedor">
+
+
+        <!-- COLUMNA IZQUIERDA -->
+
+        <div id="izquierda">
+
+            <div class="bloque">
+
+                <h3>Noticias</h3>
+
+                <a href="#">dd/mm/aaaa</a>
+                <a href="#">Lorem ipsum dolor sit amet</a>
+
+                <a href="#">dd/mm/aaaa</a>
+                <a href="#">Consectetur adipiscing elit</a>
+
+                <a href="#">dd/mm/aaaa</a>
+                <a href="#">Donec molestie nunc a sapien</a>
+
+                <a href="#">dd/mm/aaaa</a>
+                <a href="#">Maecenas aliquam dolor eget metus</a>
+
+                <a href="#">dd/mm/aaaa</a>
+                <a href="#">Fusce tempus lorem ipsum</a>
+
+            </div>
+
+
+            <div class="bloque">
+
+                <h3>Enlaces relacionados</h3>
+
+                <a href="#">Proin placerat</a>
+                <a href="#">Nulla in felis</a>
+                <a href="#">Nam lacus</a>
+
+            </div>
+
+
+            <div id="publicidad">
+
+                <h3>Publicidad</h3>
+
+                <p>
+                    Etiam fermentum, nisl tincidunt blandit interdum,
+                    massa velit posuere dolor, euismod sem odio sem
+                    odio sem.
+                </p>
+
+                <p>
+                    Nulla felis pede, commodo vel, suscipit a,
+                    molestie vel, felis.
+                </p>
+
+                <a href="#">Leer más...</a>
+
+            </div>
+
+        </div>
+
+
+        <!-- CONTENIDO CENTRAL -->
+
+        <div id="contenido">
+
+
+            <!-- PRIMER ARTÍCULO -->
+
+            <div class="articulo">
+
+                <h2>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                </h2>
+
+                <img src="https://via.placeholder.com/95" alt="Imagen" />
+
+                <p>
+                    Nullam est lacus, suscipit ut, dapibus quis,
+                    condimentum ac, risus. Vivamus vestibulum, ipsum
+                    sollicitudin faucibus pharetra, dolor metus fringilla
+                    dui, vel aliquet pede diam tempor tortor.
+                    Vestibulum pulvinar urna et quam.
+                    <span class="destacado">
+                        Pellentesque habitant morbi tristique senectus
+                        et netus et malesuada fames ac turpis egestas.
+                    </span>
+                </p>
+
+                <p>
+                    Nullam tempus vitae dui imperdiet laoreet.
+                    Quisque eget ipsum.
+                </p>
+
+                <a href="#">Seguir leyendo...</a>
+
+            </div>
+
+
+            <!-- SEGUNDO ARTÍCULO -->
+
+            <div class="articulo">
+
+                <h2>
+                    Vivamus lobortis turpis ac ante fringilla faucibus
+                </h2>
+
+                <img src="https://via.placeholder.com/95" alt="Imagen" />
+
+                <p>
+                    Quisque eget ipsum. Donec commodo, diam vel
+                    venenatis sollicitudin, quam ante convallis justo,
+                    sed consectetur ipsum. Ut consequat libero eget erat.
+                </p>
+
+                <p>
+                    Cum sociis natoque penatibus et magnis dis parturient
+                    montes, nascetur ridiculus mus. Nullam dictum
+                    hendrerit neque.
+                </p>
+
+                <a href="#">Seguir leyendo...</a>
+
+            </div>
+
+
+            <!-- TABLA -->
+
+            <table summary="Descripción de la tabla y su contenido">
+
+                <caption>
+                    Título de la tabla
+                </caption>
+
+                <thead>
+
+                    <tr>
+
+                        <th scope="col"></th>
+
+                        <th scope="col" class="especial">
+                            Título columna 1
+                        </th>
+
+                        <th scope="col" class="especial">
+                            Título columna 2
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    <tr>
+
+                        <th scope="row" class="especial">
+                            Título fila 1
+                        </th>
+
+                        <td>
+                            Donec purus ipsum
+                        </td>
+
+                        <td>
+                            Curabitur <em>blandit</em>
+                        </td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <th scope="row">
+                            Título fila 2
+                        </th>
+
+                        <td>
+                            Donec <strong>purus ipsum</strong>
+                        </td>
+
+                        <td>
+                            Curabitur blandit
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+
+                <tfoot>
+
+                    <tr>
+
+                        <th scope="col"></th>
+
+                        <th scope="col">
+                            Título columna 1
+                        </th>
+
+                        <th scope="col">
+                            Título columna 2
+                        </th>
+
+                    </tr>
+
+                </tfoot>
+
+            </table>
+
+
+            <!-- INFORMACIÓN ADICIONAL -->
+
+            <div id="adicional">
+
+                <p>
+                    Donec purus ipsum, posuere id, venenatis at,
+                    <span>placerat ac, lorem</span>.
+                    Curabitur blandit, eros sed gravida aliquet,
+                    risus justo porta lorem, ut mollis lectus tortor
+                    in orci. Pellentesque nec augue.
+                </p>
+
+                <p>
+                    Fusce nec felis eu diam pretium adipiscing.
+                    <span id="especial">
+                        Nunc elit elit, vehicula vulputate
+                    </span>,
+                    venenatis in, posuere id, lorem. Etiam sagittis,
+                    tellus in ultrices accumsan, diam nisi feugiat ante,
+                    eu congue magna mi non nisl.
+                </p>
+
+                <p>
+                    Vivamus ultrices aliquet augue.
+                    <a href="#">
+                        Donec arcu pede, pretium vitae
+                    </a>,
+                    rutrum aliquet, tincidunt blandit, pede.
+                    Aliquam in nisi. Suspendisse volutpat.
+                    Nulla facilisi.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- COLUMNA DERECHA -->
+
+        <div id="derecha">
+
+            <div class="bloqueDerecho">
+
+                <h3>
+                    Phasellus blandit
+                </h3>
+
+                <p>
+                    Praesent sodales interdum augue.
+                    Mauris lorem felis, semper eu, tincidunt
+                    vel, sollicitudin eget.
+                </p>
+
+                <p>
+                    Nulla facilisi. Morbi ut enim ut orci
+                    blandit tempus.
+                </p>
+
+                <a href="#">
+                    Seguir leyendo...
+                </a>
+
+            </div>
+
+
+            <div class="bloqueDerecho">
+
+                <h3>
+                    Nullam vel turpis
+                </h3>
+
+                <p>
+                    Donec commodo, turpis vel venenatis
+                    sollicitudin, quam ante convallis justo,
+                    sed eget lectus justo.
+                </p>
+
+                <a href="#">
+                    Seguir leyendo...
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- PIE DE PÁGINA -->
+
+    <div id="pie">
+
+        <div id="enlacesPie">
+
+            <a href="#">Nulla</a> |
+            <a href="#">Pharetra</a> |
+            <a href="#">Luctus</a> |
+            <a href="#">Ipsum</a> |
+            <a href="#">Proin</a> |
+            <a href="#">Placerat</a>
+
+        </div>
+
+        <div id="copyright">
+            &copy; Copyright Lorem ipsum
+        </div>
+
+    </div>
+
+</body>
+
+</html>
