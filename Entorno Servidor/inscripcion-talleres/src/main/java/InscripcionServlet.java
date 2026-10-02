@@ -98,7 +98,7 @@ public class InscripcionServlet extends HttpServlet {
         }
 
         // Solicitud aceptada
-        response.setContentType("text/html;charset=UTF-8");
+        /*response.setContentType("text/html;charset=UTF-8");
 
         String edadTexto = "";
 
@@ -142,12 +142,12 @@ public class InscripcionServlet extends HttpServlet {
             case "tarde":
                 turnoTexto = "Tarde";
                 break;
-        }
+        }*/
 
         request.setAttribute("nombre", nombre);
-        request.setAttribute("edad", edadTexto);
-        request.setAttribute("taller", tallerTexto);
-        request.setAttribute("turno", turnoTexto);
+        request.setAttribute("edad", edad);
+        request.setAttribute("taller", taller);
+        request.setAttribute("turno", turno);
         
         request.getRequestDispatcher("/resumen.jsp").forward(request, response);
 
