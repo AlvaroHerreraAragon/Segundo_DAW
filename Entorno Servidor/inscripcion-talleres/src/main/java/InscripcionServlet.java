@@ -1,3 +1,5 @@
+
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -8,7 +10,6 @@ import java.io.IOException;
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-
 /**
  *
  * @author daw2
@@ -18,7 +19,7 @@ public class InscripcionServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request,
-            HttpServletResponse response) throws IOException {
+            HttpServletResponse response) throws IOException, ServletException {
 
         request.setCharacterEncoding("UTF-8");
 
@@ -31,19 +32,19 @@ public class InscripcionServlet extends HttpServlet {
 
         // Validacion Nombre
         if (nombre == null) {
-            mostrarError(response, "Introduce un nombre válido");
+            //mostrarError(response, "Introduce un nombre válido");
             return;
         }
 
         nombre = nombre.trim();
 
         if (nombre.length() < 2 || nombre.length() > 40) {
-            mostrarError(response, "Introduce un nombre válido");
+            //mostrarError(response, "Introduce un nombre válido");
             return;
         }
 
         if (!nombre.matches("^[\\p{L}][\\p{L} ]*$")) {
-            mostrarError(response, "Introduce un nombre válido");
+            //mostrarError(response, "Introduce un nombre válido");
             return;
         }
 
@@ -52,7 +53,7 @@ public class InscripcionServlet extends HttpServlet {
                 && !"rango2".equals(edad)
                 && !"rango3".equals(edad)) {
 
-            mostrarError(response, "Selecciona una franja de edad válida");
+            //mostrarError(response, "Selecciona una franja de edad válida");
             return;
         }
 
@@ -61,7 +62,7 @@ public class InscripcionServlet extends HttpServlet {
                 && !"robotica".equals(taller)
                 && !"teatro".equals(taller)) {
 
-            mostrarError(response, "Selecciona un taller válido");
+            //mostrarError(response, "Selecciona un taller válido");
             return;
         }
 
@@ -69,13 +70,13 @@ public class InscripcionServlet extends HttpServlet {
         if (!"manana".equals(turno)
                 && !"tarde".equals(turno)) {
 
-            mostrarError(response, "Selecciona un turno válido");
+            //mostrarError(response, "Selecciona un turno válido");
             return;
         }
 
         // Validacion normas
         if (!"aceptadas".equals(normas)) {
-            mostrarError(response, "Debes aceptar las normas");
+            //mostrarError(response, "Debes aceptar las normas");
             return;
         }
 
@@ -84,7 +85,7 @@ public class InscripcionServlet extends HttpServlet {
                 && !"rango2".equals(edad)
                 && !"rango3".equals(edad)) {
 
-            mostrarError(response, "Robótica exige tener al menos 16 años");
+            //mostrarError(response, "Robótica exige tener al menos 16 años");
             return;
         }
 
@@ -92,7 +93,7 @@ public class InscripcionServlet extends HttpServlet {
         if ("teatro".equals(taller)
                 && "manana".equals(turno)) {
 
-            mostrarError(response, "El taller de teatro solo está por la tarde");
+            //mostrarError(response, "El taller de teatro solo está por la tarde");
             return;
         }
 
@@ -143,7 +144,16 @@ public class InscripcionServlet extends HttpServlet {
                 break;
         }
 
-        response.getWriter().println(
+        request.setAttribute("nombre", nombre);
+        request.setAttribute("edad", edadTexto);
+        request.setAttribute("taller", tallerTexto);
+        request.setAttribute("turno", turnoTexto);
+        
+        request.getRequestDispatcher("/resumen.jsp").forward(request, response);
+
+        return;
+
+        /*response.getWriter().println(
                 "<!DOCTYPE html>"
                 + "<html lang=\"es\">"
                 + "<head>"
@@ -187,6 +197,6 @@ public class InscripcionServlet extends HttpServlet {
                 + "<a href=\"index.html\">Volver al formulario</a>"
                 + "</body>"
                 + "</html>"
-        );
+        );*/
     }
 }
