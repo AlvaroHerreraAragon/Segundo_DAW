@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>   
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+    <title>Cuadro Amortización</title>
+
+    <script type="text/javascript">
+      
+      function Calcular() {
+      	
+      }
+      
+      
+      
+      
+      function Pintar() {
+      	
+      }
+      
+      
+    </script>
+
+  </head>
+
+  <body> 
+    <h2>Cálculo de la Quota Fija de un Préstamo</h2>
+    <br>
+    Cantidad Prestada (Capital): <br>
+    <input type="text" name="capital" id="capital" size="8" value="200000"> <br><br>
+    Tipo de Interés (TAE): <br>
+    <input type="text" name="tae" id="tae" value="4" size="4"> % <br><br>
+    Plazo (Años): <br>
+    <input type="text" name="plazo" id="plazo" value="20" size="5">
+    <br><br>
+    <input type="button" value="Calcular Cuota" onclick="Calcular()">
+    <br><br> Cuota Fija: <br>
+    <input type="text" name="cuota" id="cuota" disabled> <br><br>
+    <input type="button" value="Pintar Cuadro de Amortización" id="pintar" disabled onclick="Pintar()"> 
+    <br><br>
+    
+    <div id="divLineas">
+      Detalle del Cuadro
+    </div>
+    
+    
+  </body>
+
+</html>
