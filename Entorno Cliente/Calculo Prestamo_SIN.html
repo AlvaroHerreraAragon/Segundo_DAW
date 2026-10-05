@@ -1,48 +1,160 @@
 <!DOCTYPE html>
 <html>
-  <head>   
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
-    <title>Cuadro Amortización</title>
 
-    <script type="text/javascript">
-      
-      function Calcular() {
-      	
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Cuadro Amortización</title>
+
+  <script type="text/javascript">
+
+    function Calcular() {
+
+      // Obtener los datos introducidos
+      var capital = parseFloat(document.getElementById("capital").value);
+      var tae = parseFloat(document.getElementById("tae").value);
+      var plazo = parseInt(document.getElementById("plazo").value);
+
+      // Convertir el interés anual a mensual
+      var interesMensual = (tae / 100) / 12;
+
+      // Número total de cuotas
+      var numeroCuotas = plazo * 12;
+
+      // Calcular la cuota mensual
+      var cuota;
+
+      if (interesMensual == 0) {
+        cuota = capital / numeroCuotas;
+      } else {
+        cuota = capital * interesMensual /
+          (1 - Math.pow(1 + interesMensual, -numeroCuotas));
       }
-      
-      
-      
-      
-      function Pintar() {
-      	
+
+      // Mostrar la cuota con dos decimales
+      document.getElementById("cuota").value = cuota.toFixed(2) + " €";
+
+      // Activar el botón para pintar el cuadro
+      document.getElementById("pintar").disabled = false;
+    }
+
+
+
+
+    function Pintar() {
+
+      // Obtener los datos
+      var capital = parseFloat(document.getElementById("capital").value);
+      var tae = parseFloat(document.getElementById("tae").value);
+      var plazo = parseInt(document.getElementById("plazo").value);
+
+      // Interés mensual
+      var interesMensual = (tae / 100) / 12;
+
+      // Número total de cuotas
+      var numeroCuotas = plazo * 12;
+
+      // Calcular cuota
+      var cuota;
+
+      if (interesMensual == 0) {
+        cuota = capital / numeroCuotas;
+      } else {
+        cuota = capital * interesMensual /
+          (1 - Math.pow(1 + interesMensual, -numeroCuotas));
       }
-      
-      
-    </script>
 
-  </head>
+      // Crear la tabla
+      var tabla = "<table border='1' cellpadding='5'>";
 
-  <body> 
-    <h2>Cálculo de la Quota Fija de un Préstamo</h2>
-    <br>
-    Cantidad Prestada (Capital): <br>
-    <input type="text" name="capital" id="capital" size="8" value="200000"> <br><br>
-    Tipo de Interés (TAE): <br>
-    <input type="text" name="tae" id="tae" value="4" size="4"> % <br><br>
-    Plazo (Años): <br>
-    <input type="text" name="plazo" id="plazo" value="20" size="5">
-    <br><br>
-    <input type="button" value="Calcular Cuota" onclick="Calcular()">
-    <br><br> Cuota Fija: <br>
-    <input type="text" name="cuota" id="cuota" disabled> <br><br>
-    <input type="button" value="Pintar Cuadro de Amortización" id="pintar" disabled onclick="Pintar()"> 
-    <br><br>
-    
-    <div id="divLineas">
-      Detalle del Cuadro
-    </div>
-    
-    
-  </body>
+      tabla += "<tr>";
+      tabla += "<th>Cuota</th>";
+      tabla += "<th>Capital Pendiente</th>";
+      tabla += "<th>Intereses</th>";
+      tabla += "<th>Amortización</th>";
+      tabla += "<th>Cuota</th>";
+      tabla += "</tr>";
+
+      // Capital pendiente inicial
+      var capitalPendiente = capital;
+
+      // Calcular cada cuota
+      for (var i = 1; i <= numeroCuotas; i++) {
+
+        // Intereses de la cuota
+        var intereses = capitalPendiente * interesMensual;
+
+        // Parte de la cuota que amortiza capital
+        var amortizacion = cuota - intereses;
+
+        // Evitar pequeños errores decimales en la última cuota
+        if (i == numeroCuotas) {
+          amortizacion = capitalPendiente;
+          cuota = intereses + amortizacion;
+        }
+
+        // Actualizar capital pendiente
+        capitalPendiente = capitalPendiente - amortizacion;
+
+        // Evitar que aparezca un número negativo por redondeos
+        if (capitalPendiente < 0) {
+          capitalPendiente = 0;
+        }
+
+        // Añadir fila a la tabla
+        tabla += "<tr>";
+        tabla += "<td>" + i + "</td>";
+        tabla += "<td>" + capitalPendiente.toFixed(2) + " €</td>";
+        tabla += "<td>" + intereses.toFixed(2) + " €</td>";
+        tabla += "<td>" + amortizacion.toFixed(2) + " €</td>";
+        tabla += "<td>" + cuota.toFixed(2) + " €</td>";
+        tabla += "</tr>";
+      }
+
+      tabla += "</table>";
+
+      // Mostrar la tabla
+      document.getElementById("divLineas").innerHTML = tabla;
+    }
+
+
+  </script>
+
+</head>
+
+<body>
+  <h2>Cálculo de la Quota Fija de un Préstamo</h2>
+  <br>
+
+  Cantidad Prestada (Capital): <br>
+  <input type="text" name="capital" id="capital" size="8" value="200000">
+  <br><br>
+
+  Tipo de Interés (TAE): <br>
+  <input type="text" name="tae" id="tae" value="4" size="4"> %
+  <br><br>
+
+  Plazo (Años): <br>
+  <input type="text" name="plazo" id="plazo" value="20" size="5">
+  <br><br>
+
+  <input type="button" value="Calcular Cuota" onclick="Calcular()">
+
+  <br><br>
+
+  Cuota Fija: <br>
+  <input type="text" name="cuota" id="cuota" disabled>
+
+  <br><br>
+
+  <input type="button" value="Pintar Cuadro de Amortización" id="pintar" disabled onclick="Pintar()">
+
+  <br><br>
+
+  <div id="divLineas">
+    Detalle del Cuadro
+  </div>
+
+
+</body>
 
 </html>
