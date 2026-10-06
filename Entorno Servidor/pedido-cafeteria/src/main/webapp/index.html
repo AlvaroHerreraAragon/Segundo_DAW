@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Formulario</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <h1>Pedido en la cafeteria</h1>
+
+        <form action="inscripcion" method="post">
+
+            <label for="nombre">Nombre:</label>
+            <input type="text" id="nombre" name="nombre" maxlength="40" required>
+            <br><br>
+
+            <label for="producto">Producto:</label>
+            <select id="producto" name="producto" required>
+                <option value="vacia"></option>
+                <option value="tostada">Tostada</option>
+                <option value="bocadillo">Bocadillo</option>
+                <option value="fruta">Fruta</option>
+            </select>
+            <br><br>
+
+            <label for="bebida">Bebida:</label>
+            <select id="bebida" name="bebida" required>
+                <option value="vacia"></option>
+                <option value="ninguna">Sin bebida</option>
+                <option value="agua">Agua</option>
+                <option value="zumo">Zumo</option>
+                <option value="cafe">Cafe</option>
+            </select>
+            <br><br>
+
+            <label for="franja">Franja</label>
+            <select id="franja" name="franja" required>
+                <option value="vacia"></option>
+                <option value="desayuno">Desayuno</option>
+                <option value="merienda">Merienda</option>
+            </select>
+            <br><br>
+
+            <input type="radio" id="btn1" name="servicio" value="mesa" required>
+            <label for="btn1">En mesa</label>
+            <input type="radio" id="btn2" name="servicio" value="llevar" required>
+            <label for="btn2">Para llevar</label>
+            <br><br>
+
+            <label>
+                <input type="checkbox" name="cubiertos" value="si">
+                Quiero cubiertos
+            </label>
+            <br><br>
+
+            <input type="submit" value="Enviar">
+
+        </form>
+    </body>
+</html>

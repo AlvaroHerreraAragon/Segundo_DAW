@@ -5,6 +5,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -31,7 +33,7 @@ public class InscripcionServlet extends HttpServlet {
         String normas = request.getParameter("normas");
 
         // Validacion Nombre
-        /*if (nombre == null) {
+        if (nombre == null) {
             //mostrarError(response, "Introduce un nombre válido");
             return;
         }
@@ -46,7 +48,7 @@ public class InscripcionServlet extends HttpServlet {
         if (!nombre.matches("^[\\p{L}][\\p{L} ]*$")) {
             //mostrarError(response, "Introduce un nombre válido");
             return;
-        }*/
+        }
 
         // Validacion Franja de edad
         if (!"rango1".equals(edad)
@@ -98,7 +100,6 @@ public class InscripcionServlet extends HttpServlet {
         }
 
         // Solicitud aceptada
-        /*response.setContentType("text/html;charset=UTF-8");*/
         String edadTexto = "";
 
         switch (edad) {
@@ -143,6 +144,20 @@ public class InscripcionServlet extends HttpServlet {
                 break;
         }
 
+        boolean requiereAutorizacion = !"18+".equals(edadTexto);
+
+        List<String> materiales = new ArrayList<>();
+        if ("robotica".equals(taller)) {
+            materiales.add("Cuaderno");
+            materiales.add("Bolígrafo");
+            materiales.add("Cable USB");
+        } else if ("teatro".equals(taller)) {
+            materiales.add("Ropa cómoda");
+            materiales.add("Botella de agua");
+        }
+
+        request.setAttribute("materiales", materiales);
+        request.setAttribute("requiereAutorizacion", requiereAutorizacion);
         request.setAttribute("nombre", nombre);
         request.setAttribute("edad", edadTexto);
         request.setAttribute("taller", tallerTexto);

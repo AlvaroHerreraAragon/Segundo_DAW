@@ -11,9 +11,9 @@
     <body>
         <h1>Solicitud aprobadisima</h1>
         <p>Nombre: ${nombre}</p>
-        <p>Edad: ${edadTexto}</p>
-        <p>Taller: ${tallerTexto}</p>
-        <p>Turno: ${turnoTexto}</p>
+        <p>Edad: ${edad}</p>
+        <p>Taller: ${taller}</p>
+        <p>Turno: ${turno}</p>
         <a href="index.html">Volver</a>
     </body>
 </html>
