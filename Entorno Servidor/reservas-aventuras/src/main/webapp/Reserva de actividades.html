@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<!-- saved from url=(0397)https://sdmntprukwest.oaiusercontent.com/files/00000000-5f30-8243-be5e-840a518e6b6c/raw?se=2026-10-07T12%3A56%3A35Z&sp=r&sv=2026-02-06&sr=b&scid=0435d257-a527-43e3-8850-0057bd2209ae&skoid=b32d65cd-c8f1-46fb-90df-c208671889d4&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-10-07T08%3A42%3A18Z&ske=2026-10-08T08%3A42%3A18Z&sks=b&skv=2026-02-06&sig=ZV9jjcye4UxHPjwYScUxQnx03ohVe/7osMKY0t0jJaA%3D -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <title>Reserva de actividades</title>
+</head>
+<body>
+  <h1>Reserva de actividades</h1>
+  <form name="reserva" method="post" action="reserva">
+    <p>
+      <label for="actividad">Actividad</label>
+      <select id="actividad" name="actividad" required="">
+        <option value="">Selecciona una actividad</option>
+        <option value="escalada">Escalada</option>
+        <option value="tirolina">Tirolina</option>
+        <option value="kayak">Kayak</option>
+      </select>
+    </p>
+    <p>
+      <label for="categoria">Categoría</label>
+      <select id="categoria" name="categoria" required="">
+        <option value="">Selecciona una categoría</option>
+        <option value="junior">Júnior</option>
+        <option value="general">General</option>
+      </select>
+    </p>
+    <fieldset>
+      <legend>Turno</legend>
+      <label><input type="radio" name="turno" value="manana" required=""> Mañana</label>
+      <label><input type="radio" name="turno" value="tarde"> Tarde</label>
+    </fieldset>
+    <p>
+      <label for="participantes">Participantes</label>
+      <select id="participantes" name="participantes" required="">
+        <option value="">Selecciona el número de participantes</option>
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+        <option value="6">6</option>
+      </select>
+    </p>
+    <p><label><input type="checkbox" name="material" value="si"> Añadir material extra</label></p>
+    <p><label><input type="checkbox" name="condiciones" value="aceptadas" required=""> Acepto las condiciones</label></p>
+    <button type="submit">Calcular reserva</button>
+  </form>
+
+
+</body></html>
