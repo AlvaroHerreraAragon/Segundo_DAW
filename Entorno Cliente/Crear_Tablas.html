@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8" />
+	<title>Ejercicio Tablas. CREAR TABLAS V3</title>
+	<script src="Utilidades.js"></script>
+	<script type="text/javascript">
+
+		window.addEventListener("load", iniciar);
+
+		function Generar_Tabla() {
+
+			document.getElementById("tabla").innerHTML = "";
+
+			const filas = document.getElementById("nfilas").value;
+			const columnas = document.getElementById("ncolumnas").value;
+
+			const tabla = document.createElement("table");
+
+			const thead = document.createElement("thead");
+			const tbody = document.createElement("tbody");
+
+			tabla.appendChild(thead);
+			tabla.appendChild(tbody);
+
+			document.getElementById("tabla").appendChild(tabla);
+
+			for (let i = 0; i < filas; i++) {
+				const fila = document.createElement("tr");
+
+				if (i == 0) {
+					thead.appendChild(fila);
+				} else {
+					tbody.appendChild(fila);
+				}
+
+				for (let j = 0; j < columnas; j++) {
+					let columna;
+
+					if (i == 0) {
+						columna = document.createElement("th");
+						columna.textContent = "Cabecera " + (j + i);
+					} else {
+						columna = document.createElement("td");
+						columna.textContent = "Columna " + (j + 1) + ", Fila " + (i + 1);
+					}
+
+					fila.appendChild(columna);
+					columna.style.border = "1px solid black";
+					columna.onclick = crearManejador(i, j);
+				}
+			}
+			tabla.style.border = "2px solid black";
+		}
+
+		function crearManejador(fila, columna) {
+			return function () {
+				alert("Columna: " + (columna + 1) + ", Fila: " + (fila + 1));
+			};
+		}
+
+	</script>
+
+</head>
+
+<body>
+	<br>
+
+	<h2>Ejercicio Tablas. CREAR TABLAS V4</h2>
+	<h2>USAMOS UNA CLAUSURA</h2>
+
+	<h3>Introducir el código javascript necesario, para que al pulsar sobre
+		el botón, se cree una tabla con un número fijo de filas y columnas. </h3>
+
+	<h3>Ahora generamos la tabla con formato: "thead" y "tbody"</h3>
+
+	<h3>Añadimos un evento (onclick en este caso) a cada una de las celdas de la tabla</h3>
+
+	<br />
+	<form>
+		<p>
+			<label for="nfilas">Introduce el número de filas:</label>
+			<input type="number" id="nfilas" value="4" min="1" max="1000" />
+			<br />
+			<label for="ncolumnas">Introduce el número de columnas:</label>
+			<input type="number" id="ncolumnas" value="5" min="1" max="1000" />
+		</p>
+		<p>
+			<button type="button" onclick="Generar_Tabla()">
+				Generar Tabla
+			</button>
+		</p>
+	</form>
+	<br>
+
+	<div id="tabla">
+		Aquí se colocará la tabla que se cree dinámicamente con javascript.
+	</div>
+
+</body>
+
+</html>

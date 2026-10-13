@@ -8,6 +8,7 @@
 			color: red;
 		}
 	</style>
+	<script src="Utilidades.js"></script>
 	<script>
 		window.addEventListener("load", iniciar);
 
@@ -82,10 +83,10 @@
 				}
 
 				// Validar estatura
-				if(!validarEstatura()) {
+				if (!validarEstatura()) {
 					valido = false;
 
-					if(primerCampoErroneo === null) {
+					if (primerCampoErroneo === null) {
 						primerCampoErroneo = document.getElementById("estatura");
 					}
 				}
@@ -324,13 +325,13 @@
 
 			let cantidad = 0;
 
-			for(let i = 0; i < cerveza.length; i++) {
-				if(cerveza[i].checked) {
+			for (let i = 0; i < cerveza.length; i++) {
+				if (cerveza[i].checked) {
 					cantidad++;
 				}
 			}
 
-			if(cantidad < 3) {
+			if (cantidad < 3) {
 				info_bebidas.textContent = "Hay que marcar minimo 3 bebidas";
 				return false;
 			}

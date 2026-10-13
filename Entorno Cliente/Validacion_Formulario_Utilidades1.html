@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+	<head>
+		<meta charset="UTF-8"/>
+		<title>Validar Formularios</title>
+		<style type="text/css">
+			span {
+				color: red;
+			}
+			
+		</style>
+		<script src="Utilidades.js"></script>
+		<script>
+
+			window.addEventListener("load", iniciar);
+
+			function iniciar() {
+			const formulario = document.getElementById("formulario_1");
+
+			formulario.addEventListener("submit", function (evento) {
+				evento.preventDefault();
+
+				let valido = true;
+				let primerCampoErroneo = null;
+
+				document.getElementById("info_nombre").textContent = "";
+				document.getElementById("info_dni").textContent = "";
+				document.getElementById("info_sexo").textContent = "";
+				document.getElementById("info_sugerencia").textContent = "";
+
+				if (!validarNombre()) {
+					valido = false;
+
+					if (primerCampoErroneo === null) {
+						primerCampoErroneo = document.getElementById("nombre");
+					}
+				}
+
+				if (!validarDNI()) {
+					valido = false;
+
+					if (primerCampoErroneo === null) {
+						primerCampoErroneo = document.getElementById("dni");
+					}
+				}
+
+				if (!validarSexo()) {
+					valido = false;
+
+					if (primerCampoErroneo === null) {
+						primerCampoErroneo = document.getElementById("sexo");
+					}
+				}
+
+				if (!validarSugerencia()) {
+					valido = false;
+
+					if (primerCampoErroneo === null) {
+						primerCampoErroneo = document.getElementById("sugerencia");
+					}
+				}
+
+				if (!valido) {
+					primerCampoErroneo.focus();
+				} else {
+					alert("Formulario enviado correctamente.");
+					formulario.submit();
+				}
+			});
+		}
+
+		</script>
+	</head>
+
+	<body>
+
+		<h1>Ejercicio Validación de Formularios</h1>
+		<form id="formulario_1">
+		<p>
+			<h3>Formulario de Registro:</h3>
+			<label for="nombre">Nombre: </label>
+			<input type="text" name="nombre" id="nombre" maxlength="25" size="15" />
+			<span id="info_nombre"></span>
+			<div>(Mínimo 2 letras)</div>
+			<br><br>
+			
+			<label for="dni">NIF: </label>
+			<input type="text" name="dni" id="dni" maxlength="9" size="9" />
+			<span id="info_dni"></span>
+			<br><br><br>
+			
+      <label>Sexo: </label>
+			<select id="sexo">
+				<option value="">Selecciona una opción</option>
+				<option value="F">Femenino</option>
+				<option value="M">Masculino</option>
+				<option value="Y">Ya quisiera yo</option>
+			</select>
+			<span id="info_sexo"></span>
+      
+      <br><br><br>
+      <label for="sugerencia">Alguna sugerencia: </label>
+      <textarea id="sugerencia" name="sugerencia"></textarea>
+			<span id="info_sugerencia"></span>
+      <br><br>
+		</p>
+		<p><b>Todos los campos son obligatorios.</b></p>
+		<br>
+		<p>
+			<input type="submit" value="ENVIAR" >
+			<br><br>
+			<input type="reset" value="Limpiar">
+			
+		</p>
+		</form>
+	</body>
+</html>
+
+
