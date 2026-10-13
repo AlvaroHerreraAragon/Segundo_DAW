@@ -1,30 +1,61 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8"/>
-		<title>Ejercicio Menú Horizontal</title>
-		<style type="text/css">
-			
-		
 
-		</style>
-	</head>
-	<body>
+<head>
+	<meta charset="UTF-8" />
+	<title>Ejercicio Menú Horizontal</title>
+	<style type="text/css">
+		ul {
+			clear: both;
+			float: left;
+			width: 100%;
+			list-style: none;
+			margin: 0;
+			padding: 0;
+			border-left: 2px solid black;
+
+		}
+
+		ul li {
+			float: left;
+		}
+
+		ul li a {
+			padding: .3em;
+			display: block;
+			text-decoration: none;
+			color: white;
+			background: blue;
+			border-top: 2px solid black;
+			border-right: 2px solid white;
+			border-bottom: 2px solid black;
+		}
+
+		ul li a:hover {
+			background-color: aqua;
+		}
+
 		
-		<ul>
-			<li><a href="#">Enalce UNO</a></li>
-			<li><a href="#">Enlace DOS</a></li>
-			<li><a href="#">Enlace TRES</a></li>
-			<li><a href="#">Enlace CUATRO</a></li>
-		</ul>
-		
-		<p>
-			En este ejemplo, dejamos que el ul y el enlace (a) floten a la izquierda. 
-			Los elementos li se muestran como elementos en línea.
-			Esto hace que la lista esté en una línea. 
-			El elemento ul tiene una anchura de 100% y cada enlace en la lista NO tiene anchura (auto). 
-			Añadimos algunos colores y bordes para que sea más elegante.
-		</p>
-		
-	</body>
+	</style>
+</head>
+
+<body>
+
+	<ul>
+		<li><a href="#">Enalce UNO</a></li>
+		<li><a href="#">Enlace DOS</a></li>
+		<li><a href="#">Enlace TRES</a></li>
+		<li><a href="#">Enlace CUATRO</a></li>
+	</ul>
+
+	<p>
+		En este ejemplo, dejamos que el ul y el enlace (a) floten a la izquierda.
+		Los elementos li se muestran como elementos en línea.
+		Esto hace que la lista esté en una línea.
+		El elemento ul tiene una anchura de 100% y cada enlace en la lista NO tiene anchura (auto).
+		Añadimos algunos colores y bordes para que sea más elegante.
+	</p>
+
+</body>
+
 </html>
