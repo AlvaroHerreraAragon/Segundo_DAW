@@ -1,80 +1,264 @@
-﻿<!DOCTYPE html>
-<html>
-
+﻿
+<!DOCTYPE html>
+<html lang="es">
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
     <title>Cálculo de SubRed</title>
 
-    <script type="text/javascript">
-        //  Hacerlo por partes, primero obtener número de subredes y hosts por subred
-        //  Segundo, que te calcule la subred a la que pertenece.
-        //	Y por último que te calcule la tabla de todas las subredes. 
-
-
+    <script>
         window.addEventListener("load", iniciar);
 
         function iniciar() {
-            document.getElementById("btCalcular_Red").addEventListener("click", calcularRed);
+            document.getElementById("btCalcular_Red")
+                .addEventListener("click", calcularRed);
         }
 
         function calcularRed() {
-            
-            let ip1 = parseInt(document.getElementById("ip1").value);
-            let ip2 = parseInt(document.getElementById("ip2").value);
-            let ip3 = parseInt(document.getElementById("ip3").value);
-            let ip4 = parseInt(document.getElementById("ip4").value);
+            // 1. Leer la IP y la máscara
+            let ip = [
+                document.getElementById("ip1").value.trim(),
+                document.getElementById("ip2").value.trim(),
+                document.getElementById("ip3").value.trim(),
+                document.getElementById("ip4").value.trim()
+            ];
 
-            let imasc1 = parseInt(document.getElementById("imasc1").value);
-            let imasc2 = parseInt(document.getElementById("imasc2").value);
-            let imasc3 = parseInt(document.getElementById("imasc3").value);
-            let imasc4 = parseInt(document.getElementById("imasc4").value);
+            let mascara = [
+                document.getElementById("imasc1").value.trim(),
+                document.getElementById("imasc2").value.trim(),
+                document.getElementById("imasc3").value.trim(),
+                document.getElementById("imasc4").value.trim()
+            ];
 
-            if(ip1 < 0 || ip1 > 255) {
-                console.log("Error");
+            // 2. Validar los ocho valores
+            for (let i = 0; i < 4; i++) {
+                if (ip[i] === "" || !/^\d+$/.test(ip[i]) ||
+                    Number(ip[i]) > 255) {
+                    alert("La dirección IP debe contener números entre 0 y 255.");
+                    return;
+                }
+
+                if (mascara[i] === "" || !/^\d+$/.test(mascara[i]) ||
+                    Number(mascara[i]) > 255) {
+                    alert("La máscara debe contener números entre 0 y 255.");
+                    return;
+                }
+
+                ip[i] = Number(ip[i]);
+                mascara[i] = Number(mascara[i]);
             }
+
+            // 3. Comprobar que la máscara sea válida
+            let bitsMascara = "";
+
+            for (let i = 0; i < 4; i++) {
+                bitsMascara += mascara[i].toString(2).padStart(8, "0");
+            }
+
+            if (!/^1+0*$/.test(bitsMascara)) {
+                alert("La máscara de subred no es válida.");
+                return;
+            }
+
+            let prefijo = bitsMascara.indexOf("0");
+            if (prefijo === -1) {
+                prefijo = 32;
+            }
+
+            // 4. Determinar la máscara por defecto según la clase
+            let clase;
+            let prefijoDefecto;
+
+            if (ip[0] >= 1 && ip[0] <= 126) {
+                clase = "A";
+                prefijoDefecto = 8;
+            } else if (ip[0] >= 128 && ip[0] <= 191) {
+                clase = "B";
+                prefijoDefecto = 16;
+            } else if (ip[0] >= 192 && ip[0] <= 223) {
+                clase = "C";
+                prefijoDefecto = 24;
+            } else {
+                alert("Esta práctica solo admite direcciones unicast de clase A, B o C.");
+                return;
+            }
+
+            if (prefijo < prefijoDefecto) {
+                alert("La máscara debe permitir dividir la red de su clase en subredes.");
+                return;
+            }
+
+            // 5. Convertir la IP y la máscara a números de 32 bits
+            let ipNumero = ip.reduce(
+                (total, octeto) => total * 256 + octeto, 0
+            );
+
+            let mascaraNumero = mascara.reduce(
+                (total, octeto) => total * 256 + octeto, 0
+            );
+
+            let mascaraDefectoNumero =
+                (0xFFFFFFFF * (2 ** (32 - prefijoDefecto) - 1)) /
+                (2 ** (32 - prefijoDefecto));
+
+            // Corregir la máscara por defecto con una operación binaria
+            mascaraDefectoNumero =
+                (0xFFFFFFFF << (32 - prefijoDefecto)) >>> 0;
+
+            // 6. Calcular la dirección de red y de difusión
+            let redNumero = (ipNumero & mascaraNumero) >>> 0;
+            let difusionNumero =
+                (redNumero | (~mascaraNumero)) >>> 0;
+
+            // 7. Calcular subredes y hosts
+            let bitsPrestados = prefijo - prefijoDefecto;
+            let numeroSubredes = 2 ** bitsPrestados;
+            let bitsHost = 32 - prefijo;
+            let numeroHosts = Math.max(0, (2 ** bitsHost) - 2);
+
+            // 8. Mostrar los resultados
+            document.getElementById("red").value =
+                numeroAIP(redNumero);
+
+            document.getElementById("difusion").value =
+                numeroAIP(difusionNumero);
+
+            document.getElementById("nsubredes").value =
+                numeroSubredes;
+
+            document.getElementById("nhost").value =
+                numeroHosts;
+
+            // 9. Generar la tabla de subredes
+            generarTabla(
+                ipNumero,
+                mascaraDefectoNumero,
+                prefijo,
+                prefijoDefecto,
+                numeroSubredes
+            );
         }
 
+        // Convierte un número de 32 bits a una dirección IP
+        function numeroAIP(numero) {
+            return [
+                (numero >>> 24) & 255,
+                (numero >>> 16) & 255,
+                (numero >>> 8) & 255,
+                numero & 255
+            ].join(".");
+        }
 
+        // Genera la tabla con las direcciones de cada subred
+        function generarTabla(
+            ipNumero,
+            mascaraDefectoNumero,
+            prefijo,
+            prefijoDefecto,
+            numeroSubredes
+        ) {
+            let contenedor =
+                document.getElementById("div_tablaSubredes");
+
+            contenedor.replaceChildren();
+
+            // Evitar generar millones de filas en el navegador
+            if (numeroSubredes > 4096) {
+                contenedor.textContent =
+                    "Hay " + numeroSubredes +
+                    " subredes. La tabla es demasiado grande para mostrarla de una vez.";
+                return;
+            }
+
+            let tabla = document.createElement("table");
+            tabla.border = "1";
+
+            let encabezado = tabla.insertRow();
+            let titulos = [
+                "N.º",
+                "Dirección de red",
+                "Primera IP útil",
+                "Última IP útil",
+                "Dirección de difusión"
+            ];
+
+            for (let titulo of titulos) {
+                let celda = document.createElement("th");
+                celda.textContent = titulo;
+                encabezado.appendChild(celda);
+            }
+
+            let bitsHost = 32 - prefijo;
+            let tamanoSubred = 2 ** bitsHost;
+
+            let redClase = (ipNumero & mascaraDefectoNumero) >>> 0;
+
+            for (let i = 0; i < numeroSubredes; i++) {
+                let redSubred =
+                    (redClase + i * tamanoSubred) >>> 0;
+
+                let difusionSubred =
+                    (redSubred + tamanoSubred - 1) >>> 0;
+
+                let primeraIP = redSubred + 1;
+                let ultimaIP = difusionSubred - 1;
+
+                let fila = tabla.insertRow();
+
+                let valores = [
+                    i + 1,
+                    numeroAIP(redSubred),
+                    bitsHost >= 2 ? numeroAIP(primeraIP) : "—",
+                    bitsHost >= 2 ? numeroAIP(ultimaIP) : "—",
+                    numeroAIP(difusionSubred)
+                ];
+
+                for (let valor of valores) {
+                    let celda = fila.insertCell();
+                    celda.textContent = valor;
+                }
+            }
+
+            contenedor.appendChild(tabla);
+        }
     </script>
-
 </head>
 
 <body>
+    <center><h2>Cálculo de SUBRED</h2></center>
 
-    <center>
-        <h2>Cálculo de SUBRED</h2>
-    </center>
-    <br />
     <div id="div_ip">
         <p>
             Introduce la IP:
-            <input type="text" id="ip1" name="ip1" size="2" maxlength="3" value="172"> .
-            <input type="text" id="ip2" name="ip2" size="2" maxlength="3" value="26"> .
-            <input type="text" id="ip3" name="ip3" size="2" maxlength="3" value="2"> .
-            <input type="text" id="ip4" name="ip4" size="2" maxlength="3" value="15">
+            <input type="text" id="ip1" size="3" maxlength="3" value="172"> .
+            <input type="text" id="ip2" size="3" maxlength="3" value="26"> .
+            <input type="text" id="ip3" size="3" maxlength="3" value="2"> .
+            <input type="text" id="ip4" size="3" maxlength="3" value="15">
         </p>
     </div>
+
     <div id="div_masc">
         <p>
             Máscara SubRed:
-            <input type="text" id="imasc1" name="imasc1" size="2" maxlength="3" value="255"> .
-            <input type="text" id="imasc2" name="imasc2" size="2" maxlength="3" value="255"> .
-            <input type="text" id="imasc3" name="imasc3" size="2" maxlength="3" value="255"> .
-            <input type="text" id="imasc4" name="imasc4" size="2" maxlength="3" value="0">
+            <input type="text" id="imasc1" size="3" maxlength="3" value="255"> .
+            <input type="text" id="imasc2" size="3" maxlength="3" value="255"> .
+            <input type="text" id="imasc3" size="3" maxlength="3" value="255"> .
+            <input type="text" id="imasc4" size="3" maxlength="3" value="0">
         </p>
     </div>
-    <br>
+
     <div id="div_btCalcular_Red">
         <input id="btCalcular_Red" type="button" value="Calcular Red">
     </div>
-    <br><br>
+
+    <br>
+
     <div id="div_Red">
         <table border="1">
             <tr align="center">
                 <td>Dirección de Red</td>
                 <td>Difusión</td>
-                <td>Nº SubRedes</td>
-                <td>Host´s por SubRed</td>
+                <td>N.º SubRedes</td>
+                <td>Hosts por SubRed</td>
             </tr>
             <tr>
                 <td><input type="text" id="red" readonly></td>
@@ -84,16 +268,11 @@
             </tr>
         </table>
     </div>
-    <br><br>
-    <center>
-        <h2>Tabla de SubRedes</h2>
-    </center>
-    <br>
-    <div id="div_tablaSubredes" class="d_Tabla">
 
-    </div>
     <br><br>
 
+    <center><h2>Tabla de SubRedes</h2></center>
+
+    <div id="div_tablaSubredes" class="d_Tabla"></div>
 </body>
-
 </html>
