@@ -43,6 +43,13 @@
             <c:out value="${servicioTexto}" />
         </p>
 
+        <c:if test="${bebidaTexto eq 'Sin bebida'}">
+            <p>Este pedido no incluye bebida</p>
+        </c:if>
+
+        <c:if test="${paraLlevar and recordatorioCubiertos}">
+            <p>Antes de coger la fruta, comprueba que llevas cubiertos</p>
+        </c:if>
 
         <%-- Avisos del pedido --%>
 
@@ -77,7 +84,20 @@
             </ul>
         </c:if>
 
-
+        <table border="1px">
+            <thead><tr><th>Acompañamiento</th></tr></thead>
+            <tbody>
+                <c:forEach items="${acompanamientos}" var="acompanamiento">
+                    <tr><td><c:out value="${acompanamiento}" />
+                            <c:if test="${acompanamiento eq 'Aceite'}">
+                                <p>
+                                    Añadelo a tu gusto
+                                </p>
+                            </c:if>
+                        </td></tr>
+                    </c:forEach>
+            </tbody>
+        </table>
         <p>
             <a href="index.html">Realizar otro pedido</a>
         </p>

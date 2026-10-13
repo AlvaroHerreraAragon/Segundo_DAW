@@ -12,23 +12,44 @@
     <body>
         <h1>Solicitud aprobadisima</h1>
         <p>Nombre: <c:out value="${nombre}"/></p>
-        <p>Edad: <c:out value="${edad}"/></p>
-        <p>Taller: <c:out value="${taller}"/></p>
-        <p>Turno: <c:out value="${turno}"/></p>
-        <c:if test="${turno eq 'Tarde'}">
+        <p>Edad: <c:out value="${edadTexto}"/></p>
+        <p>Taller: <c:out value="${tallerTexto}"/></p>
+        <p>Turno: <c:out value="${turnoTexto}"/></p>
+        <c:if test="${turnoTexto eq 'Tarde'}">
             <p>Tu taller es por la tarde</p>
         </c:if>
-        <c:if test="${requiereAutorizacion}">
+        <c:if test="${requiereAutorizacion and turnoTexto eq 'Mañana'}">
             <p>
                 Recuerda entregar la autorización familiar.
+                <br>
+                Revisa la hora de llegada con tu familia.
             </p>
         </c:if>
         <h2>Materiales que debes traer</h2>
-        <ul>
-            <c:forEach items="${materiales}" var="material">
-                <li><c:out value="${material}" /></li>
-            </c:forEach>
-        </ul>
+        <table border="1px">
+            <thead><tr><th>Material</th></tr></thead>
+            <tbody>
+                <c:forEach items="${materiales}" var="material">
+                    <tr><td><c:out value="${material}" />
+                            <c:if test="${material eq 'Botella de agua'}">
+                                <p>
+                                    Llenala antes de salir
+                                </p>
+                            </c:if>
+                        </td></tr>
+                    </c:forEach>
+            </tbody>
+        </table>
+        <c:if test="${tallerTexto eq 'Fotografia'}">
+            <p>
+                Observa la luz antes de hacer la foto
+            </p>
+        </c:if>
+
+        <p>Taller del objeto:
+            <c:out value="${detalleTaller.nombre}" />
+        </p>
+
         <a href="index.html">Volver</a>
     </body>
 </html>

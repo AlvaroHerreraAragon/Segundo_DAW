@@ -31,6 +31,7 @@ public class InscripcionServlet extends HttpServlet {
         String taller = request.getParameter("taller");
         String turno = request.getParameter("turno");
         String normas = request.getParameter("normas");
+        
 
         // Validacion Nombre
         if (nombre == null) {
@@ -159,13 +160,18 @@ public class InscripcionServlet extends HttpServlet {
         request.setAttribute("materiales", materiales);
         request.setAttribute("requiereAutorizacion", requiereAutorizacion);
         request.setAttribute("nombre", nombre);
-        request.setAttribute("edad", edadTexto);
-        request.setAttribute("taller", tallerTexto);
-        request.setAttribute("turno", turnoTexto);
+        request.setAttribute("edadTexto", edadTexto);
+        request.setAttribute("tallerTexto", tallerTexto);
+        request.setAttribute("turnoTexto", turnoTexto);
 
         request.getRequestDispatcher("/resumen.jsp").forward(request, response);
+        
+        Taller detalleTaller = new Taller("Robotica", "Tarde", 10);
+        request.setAttribute("detalleTaller", detalleTaller);
 
         return;
+
+        
 
         /*response.getWriter().println(
                 "<!DOCTYPE html>"
