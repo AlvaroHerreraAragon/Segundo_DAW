@@ -166,7 +166,7 @@ public class InscripcionServlet extends HttpServlet {
 
         request.getRequestDispatcher("/resumen.jsp").forward(request, response);
         
-        Taller detalleTaller = new Taller("Robotica", "Tarde", 10);
+        Taller detalleTaller = new Taller("Robotica", "Tarde", 10, 90);
         request.setAttribute("detalleTaller", detalleTaller);
 
         return;

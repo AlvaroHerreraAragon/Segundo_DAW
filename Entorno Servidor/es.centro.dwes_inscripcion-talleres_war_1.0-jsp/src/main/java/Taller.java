@@ -8,14 +8,17 @@
  * @author daw2
  */
 public class Taller {
+
     private String nombre;
     private String turno;
     private int plazas;
+    private int duracionMinutos;
 
-    public Taller(String nombre, String turno, int plazas) {
+    public Taller(String nombre, String turno, int plazas, int duracionMinutos) {
         this.nombre = nombre;
         this.turno = turno;
         this.plazas = plazas;
+        this.duracionMinutos = duracionMinutos;
     }
 
     public String getNombre() {
@@ -29,7 +32,11 @@ public class Taller {
     public int getPlazas() {
         return plazas;
     }
+
+    public int getDuracionMinutos() {
+        return duracionMinutos;
+    }
+
     
-    
-    
+
 }

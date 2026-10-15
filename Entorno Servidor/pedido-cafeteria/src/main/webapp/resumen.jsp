@@ -4,7 +4,6 @@
     Author     : daw2
 --%>
 
-
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="jakarta.tags.core"%>
 
@@ -25,7 +24,7 @@
 
         <p>
             <strong>Producto:</strong>
-            <c:out value="${productoTexto}" />
+            <c:out value="${detalleProducto.nombre}" />
         </p>
 
         <p>
@@ -65,18 +64,18 @@
             <p>Has pedido fruta sin cubiertos; recuerda traer los tuyos</p>
         </c:if>
 
-
         <%-- Acompañamientos --%>
 
         <h2>Acompañamientos incluidos</h2>
 
-        <c:if test="${empty acompanamientos}">
+        <c:if test="${empty detalleProducto.acompanamientos}">
             <p>Este producto no incluye acompañamientos</p>
         </c:if>
 
-        <c:if test="${not empty acompanamientos}">
+        <c:if test="${not empty detalleProducto.acompanamientos}">
             <ul>
-                <c:forEach items="${acompanamientos}" var="acompanamiento">
+                <c:forEach items="${detalleProducto.acompanamientos}"
+                           var="acompanamiento">
                     <li>
                         <c:out value="${acompanamiento}" />
                     </li>
@@ -84,24 +83,31 @@
             </ul>
         </c:if>
 
-        <table border="1px">
-            <thead><tr><th>Acompañamiento</th></tr></thead>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>Acompañamiento</th>
+                </tr>
+            </thead>
             <tbody>
-                <c:forEach items="${acompanamientos}" var="acompanamiento">
-                    <tr><td><c:out value="${acompanamiento}" />
+                <c:forEach items="${detalleProducto.acompanamientos}"
+                           var="acompanamiento">
+                    <tr>
+                        <td>
+                            <c:out value="${acompanamiento}" />
+
                             <c:if test="${acompanamiento eq 'Aceite'}">
-                                <p>
-                                    Añadelo a tu gusto
-                                </p>
+                                <p>Añádelo a tu gusto</p>
                             </c:if>
-                        </td></tr>
-                    </c:forEach>
+                        </td>
+                    </tr>
+                </c:forEach>
             </tbody>
         </table>
+
         <p>
             <a href="index.html">Realizar otro pedido</a>
         </p>
 
     </body>
 </html>
-

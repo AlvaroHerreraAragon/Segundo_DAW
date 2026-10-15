@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Simulador de consumo del aula</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                max-width: 860px;
+                margin: 35px auto;
+                padding: 0 20px;
+                color: #243847;
+                line-height: 1.5;
+            }
+            h1, h2 {
+                color: #193f59;
+            }
+            fieldset {
+                margin: 20px 0;
+                padding: 20px;
+                border: 1px solid #a9bdcc;
+            }
+            legend {
+                font-weight: bold;
+            }
+            label {
+                display: block;
+                margin: 10px 0;
+            }
+            input {
+                padding: 7px;
+                font: inherit;
+                max-width: 100%;
+                box-sizing: border-box;
+            }
+            input[type="number"] {
+                width: 100px;
+            }
+            input[type="text"] {
+                width: 300px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                padding: 10px;
+                text-align: left;
+                border-bottom: 1px solid #cbd7df;
+            }
+            th {
+                background: #e8eff3;
+            }
+            button {
+                background: #193f59;
+                color: white;
+                padding: 12px 18px;
+                border: 0;
+                cursor: pointer;
+                font: inherit;
+            }
+            a {
+                color: #193f59;
+            }
+            .nota {
+                color: #526a79;
+            }
+            @media(max-width: 560px) {
+                th, td {
+                    padding: 6px;
+                }
+                input[type="number"] {
+                    width: 70px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Simulador de consumo del aula</h1>
+        <p>Indica los equipos utilizados y compara el coste de dos tarifas ficticias.</p>
+        <p><a href="equipos">Consultar catálogo de equipos</a></p>
+        <!-- Archivo proporcionado. Los cálculos y las validaciones se realizan en el servidor. -->
+        <form action="simulador" method="post" accept-charset="UTF-8">
+            <fieldset>
+                <legend>Datos de la simulación</legend>
+                <label for="aula">Nombre del aula (entre 2 y 40 caracteres)</label>
+                <input id="aula" name="aula" type="text" minlength="2" maxlength="40" required placeholder="Aula 2">
+                <label for="dias">Días de uso (de 1 a 31)</label>
+                <input id="dias" name="dias" type="number" min="1" max="31" step="1" value="10" required>
+                <label for="presupuesto">Presupuesto máximo en euros (de 1 a 1000)</label>
+                <input id="presupuesto" name="presupuesto" type="number" min="1" max="1000" step="1" value="30" required>
+            </fieldset>
+            <fieldset>
+                <legend>Equipos y uso diario</legend>
+                <p class="nota">Si no utilizas un tipo de equipo, indica 0 en cantidad y 0 en horas. Todos los equipos de un mismo tipo tienen las mismas horas de uso.</p>
+                <table>
+                    <thead><tr><th scope="col">Equipo</th><th scope="col">Cantidad</th><th scope="col">Horas al día</th></tr></thead>
+                    <tbody>
+                        <tr><th scope="row">Ordenadores</th><td><input aria-label="Cantidad de ordenadores" name="cantidadOrdenadores" type="number" min="0" max="30" step="1" value="0" required></td><td><input aria-label="Horas diarias de ordenadores" name="horasOrdenadores" type="number" min="0" max="12" step="1" value="0" required></td></tr>
+                        <tr><th scope="row">Monitores</th><td><input aria-label="Cantidad de monitores" name="cantidadMonitores" type="number" min="0" max="30" step="1" value="0" required></td><td><input aria-label="Horas diarias de monitores" name="horasMonitores" type="number" min="0" max="12" step="1" value="0" required></td></tr>
+                        <tr><th scope="row">Proyectores</th><td><input aria-label="Cantidad de proyectores" name="cantidadProyectores" type="number" min="0" max="2" step="1" value="0" required></td><td><input aria-label="Horas diarias de proyectores" name="horasProyectores" type="number" min="0" max="12" step="1" value="0" required></td></tr>
+                    </tbody>
+                </table>
+            </fieldset>
+            <button type="submit">Calcular consumo</button>
+        </form>
+        <p><a href="simulador">Abrir el formulario mediante GET</a></p>
+    </body>
+</html>

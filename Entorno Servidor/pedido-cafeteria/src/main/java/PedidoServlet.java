@@ -180,6 +180,9 @@ public class PedidoServlet extends HttpServlet {
         boolean paraLlevar = "llevar".equals(servicio);
         boolean incluirCubiertos = "si".equals(cubiertos);
         boolean recordatorioCubiertos = "fruta".equals(producto) && !incluirCubiertos;
+        boolean soloDesayuno = productoTexto.equals("Tostada");
+        Producto detalleProducto = new Producto(productoTexto, soloDesayuno);
+        detalleProducto.getAcompanamientos().addAll(acompanamientos);
 
         request.setAttribute("nombre", nombre);
         request.setAttribute("productoTexto", productoTexto);
@@ -191,6 +194,7 @@ public class PedidoServlet extends HttpServlet {
         request.setAttribute("incluirCubiertos", incluirCubiertos);
         request.setAttribute("recordatorioCubiertos", recordatorioCubiertos);
         request.setAttribute("acompanamientos", acompanamientos);
+        request.setAttribute("detalleProducto", detalleProducto);
 
         request.getRequestDispatcher("/resumen.jsp").forward(request, response);
 
