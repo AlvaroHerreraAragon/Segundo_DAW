@@ -2,94 +2,125 @@
 <html>
 
 <head>
-	<meta charset="UTF-8" />
-	<title>Ejercicio Menú Horizontal</title>
-	<style type="text/css">
+    <meta charset="UTF-8" />
+    <title>Ejercicio Menú Horizontal</title>
 
-		nav ul {
-			clear: both;
-			float: left;
-			width: 100%;
-			list-style: none;
-			margin: 0;
-			padding: 0;
-		}
+    <style type="text/css">
 
-		nav ul li {
-			float: left;
-			position: relative;
-		}
+        /* Menú principal */
+        nav ul {
+            clear: both;
+            float: left;
+            width: 100%;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
 
-		nav ul li ul {
-			position: absolute;
-		}
+        nav ul li {
+            float: left;
+            position: relative;
+        }
 
-		nav ul li a {
-			padding: .3em;
-			display: block;
-			text-decoration: none;
-			color: white;
-			background: blue;
-			border-top: 2px solid black;
-			border-right: 2px solid white;
-			border-bottom: 2px solid black;
-		}
+        /* Enlaces */
+        nav ul li a {
+            padding: .3em;
+            display: block;
+            text-decoration: none;
+            color: white;
+            background: blue;
+            border-top: 2px solid black;
+            border-right: 2px solid white;
+            border-bottom: 2px solid black;
+        }
 
-		nav ul li ul li {
-			display: none;
-		}
+        /* Ocultar todos los submenús */
+        nav ul li ul {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 180px;
+            float: none;
+            z-index: 1000;
+        }
 
-		nav ul li:hover li {
-			display: block;
-		}
+        /* Los elementos de los submenús se colocan en vertical */
+        nav ul li ul li {
+            float: none;
+            display: block;
+            width: 100%;
+        }
 
-	</style>
+        /* Los enlaces ocupan todo el ancho del submenú */
+        nav ul li ul li a {
+            width: auto;
+        }
+
+        /* Mostrar el submenú al pasar el ratón */
+        nav ul li:hover > ul {
+            display: block;
+        }
+
+        /* El tercer nivel se abre a la derecha */
+        nav ul li ul li ul {
+            top: 0;
+            left: 100%;
+        }
+
+        /* Efecto al pasar el ratón por los enlaces */
+        nav ul li a:hover {
+            background: darkblue;
+        }
+
+    </style>
 </head>
 
 <body>
 
-	<nav class="menuHorizontal">
-		<ul>
-			<li>
-				<a href="#">Enalce UNO</a>
-				<ul>
-					<li><a href="#">Submenu1</a></li>
-					<li><a href="#">Submenu2</a></li>
-					<li><a href="#">Submenu3</a></li>
-					<li><a href="#">Submenu4</a></li>
-				</ul>
-			</li>
+    <nav class="menuHorizontal">
+        <ul>
+            <li>
+                <a href="#">Enlace UNO</a>
+                <ul>
+                    <li><a href="#">Submenu1</a></li>
+                    <li><a href="#">Submenu2</a></li>
+                    <li><a href="#">Submenu3</a></li>
+                    <li><a href="#">Submenu4</a></li>
+                </ul>
+            </li>
 
+            <li><a href="#">Enlace DOS</a></li>
 
-			<li><a href="#">Enlace DOS</a></li>
-			<li>
-				<a href="#">Enlace TRES</a>
-				<ul>
-					<li><a href="">Submenu1</a></li>
-					<li><a href="">Submenu2</a></li>
-					<li><a href="">Submenu3</a></li>
-					<li><a href="">Submenu4</a>
-						<ul>
-							<li><a href="">Submenu1</a></li>
-							<li><a href="">Submenu2</a></li>
-							<li><a href="">Submenu3</a></li>
-							<li><a href="">Submenu4</a></li>
-						</ul>
-					</li>
-				</ul>
+            <li>
+                <a href="#">Enlace TRES</a>
+                <ul>
+                    <li><a href="#">Submenu1</a></li>
+                    <li><a href="#">Submenu2</a></li>
+                    <li><a href="#">Submenu3</a></li>
+                    <li>
+                        <a href="#">Submenu4</a>
+                        <ul>
+                            <li><a href="#">Submenu1</a></li>
+                            <li><a href="#">Submenu2</a></li>
+                            <li><a href="#">Submenu3</a></li>
+                            <li><a href="#">Submenu4</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
 
-			</li>
-			<li><a href="#">Enlace CUATRO</a></li>
-		</ul>
-	</nav>
+            <li><a href="#">Enlace CUATRO</a></li>
+        </ul>
+    </nav>
 
-	<p>
-		En este ejemplo, dejamos que el ul y el enlace (a) floten a la izquierda.
-		Los elementos li se muestran como elementos en línea.
-		Esto hace que la lista esté en una línea.
-		El elemento ul tiene una anchura de 100% y cada enlace en la lista NO tiene anchura (auto).
-		Añadimos algunos colores y bordes para que sea más elegante.
-	</p>
+    <p>
+        En este ejemplo, dejamos que el ul y el enlace (a) floten a la izquierda.
+        Los elementos li se muestran como elementos en línea.
+        Esto hace que la lista esté en una línea.
+        El elemento ul tiene una anchura de 100% y cada enlace en la lista NO tiene anchura (auto).
+        Añadimos algunos colores y bordes para que sea más elegante.
+    </p>
 
 </body>
 
