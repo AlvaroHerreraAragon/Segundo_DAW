@@ -130,12 +130,58 @@
       return fila;
     }
 
+    var idPersonaEditar = null;
+
     function LlenaTabla(aTabla, cuerpoTabla) {
       cuerpoTabla.innerHTML = "";
-      var fila, td, boton;
-      for (var i = 0; i < aTabla.length; i++) {
+      var fila, td, boton, btnModificar;
+      for (let i = 0; i < aTabla.length; i++) {
         fila = Crea_Fila(aTabla[i]);
         cuerpoTabla.appendChild(fila);
+
+        td = document.createElement("td");
+        fila.appendChild(td);
+
+        boton = document.createElement("button");
+        boton.textContent = "Borrar";
+        td.appendChild(boton);
+
+        btnModificar = document.createElement("button");
+        btnModificar.textContent = "Modificar";
+
+        td = document.createElement("td");
+        fila.appendChild(td);
+        td.appendChild(btnModificar);
+
+        boton.addEventListener("click", function () {
+          var id = aTabla[i].ID;
+
+          if (confirm("¿Quieres borrar esta persona?")) {
+            peti.peticion("servidor.php", "POST", function (respuesta) {
+              var personas = JSON.parse(respuesta);
+
+              var cuerpoTabla = document.getElementById("filas_tabla");
+              LlenaTabla(personas, cuerpoTabla);
+            }, JSON.stringify({ servicio: "borrar", id }));
+          }
+
+        });
+
+        btnModificar.addEventListener("click", function () {
+          var id = aTabla[i].ID;
+          idPersonaEditar = aTabla[i].ID;
+
+          peti.peticion("servidor.php", "POST", function (respuesta) {
+            var persona = JSON.parse(respuesta);
+
+            formPersonas.classList.add("ver");
+
+            document.getElementById("dni").value = persona.DNI;
+            document.getElementById("nombre").value = persona.NOMBRE;
+            document.getElementById("apellidos").value = persona.APELLIDOS;
+
+          }, JSON.stringify({ servicio: "selPersonaID", id }));
+        });
       }
     }
 
@@ -145,6 +191,9 @@
     function ListarPersonas() {
       peti.peticion("servidor.php", "POST", function (respuesta) {
         var personas = JSON.parse(respuesta);
+
+        console.log(personas);
+
         var cuerpoTabla = document.getElementById("filas_tabla");
         LlenaTabla(personas, cuerpoTabla);
       }, JSON.stringify({ servicio: "listar" }));
@@ -152,20 +201,51 @@
     }
     ListarPersonas();
 
-    var anadirPersona = document.getElementById("btNuevaPersona");
+    var nuevaPersona = document.getElementById("btNuevaPersona");
     var formPersonas = document.getElementById("formPersonas");
 
-    anadirPersona.addEventListener("click", function() {
+    nuevaPersona.addEventListener("click", function () {
       formPersonas.classList.add("ver");
+      idPersonaEditar = null;
+      document.getElementById("dni").value = "";
+      document.getElementById("nombre").value = "";
+      document.getElementById("apellidos").value = "";
     });
 
-    var borrarPersona = document.getElementById("btCancelar");
+    var cancelarPersona = document.getElementById("btCancelar");
 
-    borrarPersona.addEventListener("click", function() {
-      formPersonas.classList.remove("ver")
+    cancelarPersona.addEventListener("click", function () {
+      formPersonas.classList.remove("ver");
+      idPersonaEditar = null;
     });
 
-    
+    var botonAnade = document.getElementById("btAnade");
+    botonAnade.addEventListener("click", function () {
+      var dni = document.getElementById("dni").value;
+      var nombre = document.getElementById("nombre").value;
+      var apellidos = document.getElementById("apellidos").value;
+
+      if (dni.trim() === "" || nombre.trim() === "" || apellidos.trim() === "") {
+        alert("Todos los campos son obligatorios");
+        return;
+      }
+
+      var servicio;
+
+      if (idPersonaEditar === null) {
+        servicio = "insertar";
+      } else {
+        servicio = "modificar";
+      }
+
+      peti.peticion("servidor.php", "POST", function (respuesta) {
+        var personas = JSON.parse(respuesta);
+        var cuerpoTabla = document.getElementById("filas_tabla");
+        LlenaTabla(personas, cuerpoTabla);
+        formPersonas.classList.remove("ver")
+        idPersonaEditar = null;
+      }, JSON.stringify({ servicio, id : idPersonaEditar, dni, nombre, apellidos }));
+    });
 
   </script>
 </body>
