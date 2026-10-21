@@ -1,0 +1,1068 @@
+
+<!--
+  Cargamos el archivo externo utilAJAX.js.
+
+  Este archivo contiene la clase pAJAX que utilizamos más abajo
+  para realizar peticiones AJAX al servidor sin tener que recargar
+  toda la página.
+
+  Es importante cargar este archivo antes del script que utiliza
+  la clase pAJAX.
+-->
+<script src="utilAJAX.js"></script>
+
+<script>
+
+    /*
+     * ============================================================
+     * FUNCIÓN CREA_FILA()
+     * ============================================================
+     *
+     * OBJETIVO:
+     * Crear una fila HTML de una tabla (<tr>) a partir de un objeto
+     * que contiene los datos de una persona.
+     *
+     * PARÁMETRO:
+     * aCol: objeto que contiene los datos de una persona.
+     *
+     * Por ejemplo, aCol podría tener esta estructura:
+     *
+     * {
+     *     ID: 1,
+     *     DNI: "12345678A",
+     *     NOMBRE: "Ana",
+     *     APELLIDOS: "García López"
+     * }
+     *
+     * La función creará una fila con cuatro celdas:
+     *
+     * | 1 | 12345678A | Ana | García López |
+     *
+     * IMPORTANTE:
+     * Esta función solamente construye la fila y la devuelve.
+     * No la añade por sí misma a la tabla.
+     */
+    function Crea_Fila(aCol) {
+
+      /*
+       * document.createElement("tr")
+       *
+       * Crea un nuevo elemento HTML <tr>.
+       *
+       * <tr> representa una fila dentro de una tabla HTML.
+       *
+       * Guardamos el elemento creado en la variable fila
+       * para poder añadirle las celdas posteriormente.
+       */
+      var fila = document.createElement("tr");
+
+      /*
+       * Declaramos dos variables:
+       *
+       * col: guardará cada celda <td> que vayamos creando.
+       *
+       * cont: guardará el nodo de texto que introduciremos
+       *       dentro de cada celda.
+       *
+       * Las declaramos fuera del bucle para poder reutilizarlas
+       * en cada vuelta.
+       */
+      var col; var cont;
+
+      /*
+       * for (var i in aCol)
+       *
+       * Recorre las propiedades enumerables del objeto aCol.
+       *
+       * En cada vuelta, i contiene el nombre de una propiedad.
+       *
+       * Por ejemplo:
+       *   Primera vuelta: i = "ID"
+       *   Segunda vuelta: i = "DNI"
+       *   Tercera vuelta: i = "NOMBRE"
+       *   Cuarta vuelta: i = "APELLIDOS"
+       *
+       * aCol[i] permite obtener el valor correspondiente
+       * a la propiedad que se está recorriendo.
+       *
+       * Por ejemplo, si i vale "NOMBRE", aCol[i] será "Ana".
+       */
+      for (var i in aCol) {
+
+        /*
+         * Creamos una celda HTML <td>.
+         *
+         * Cada <td> representa una columna dentro de la fila.
+         */
+        col = document.createElement("td");
+
+        /*
+         * document.createTextNode(aCol[i])
+         *
+         * Crea un nodo de texto con el valor de la propiedad actual.
+         *
+         * Por ejemplo, si aCol[i] vale "Ana", crea un nodo
+         * que contiene el texto Ana.
+         *
+         * Se utiliza un nodo de texto para insertar el valor
+         * como texto, en lugar de interpretarlo como HTML.
+         */
+        cont = document.createTextNode(aCol[i]);
+
+        /*
+         * col.appendChild(cont)
+         *
+         * Introduce el nodo de texto dentro de la celda.
+         *
+         * En este momento, la celda contiene el dato actual.
+         */
+        col.appendChild(cont);
+
+        /*
+         * fila.appendChild(col)
+         *
+         * Añade la celda completa a la fila.
+         *
+         * El proceso de cada vuelta es:
+         *   1. Crear una celda.
+         *   2. Crear el texto de la propiedad.
+         *   3. Introducir el texto en la celda.
+         *   4. Introducir la celda en la fila.
+         */
+        fila.appendChild(col);
+      }
+
+      /*
+       * return fila
+       *
+       * Devuelve la fila completa una vez que se han recorrido
+       * todas las propiedades del objeto.
+       *
+       * Otra función podrá recoger esta fila y añadirla
+       * al cuerpo de la tabla mediante appendChild().
+       */
+      return fila;
+    }
+
+
+    /*
+     * ============================================================
+     * VARIABLE GLOBAL idPersonaEditar
+     * ============================================================
+     *
+     * Esta variable guarda el ID de la persona que se está editando.
+     *
+     * Se declara fuera de las funciones y eventos porque necesitamos
+     * acceder a ella desde diferentes partes del programa.
+     *
+     * Su significado es:
+     *
+     *   null  -> no estamos editando a ninguna persona.
+     *            La operación será insertar una persona nueva.
+     *
+     *   Un ID -> estamos editando a una persona existente.
+     *            La operación será modificar sus datos.
+     *
+     * Ejemplo:
+     *   idPersonaEditar = null;
+     *   significa que no hay una persona seleccionada para editar.
+     *
+     *   idPersonaEditar = 5;
+     *   significa que estamos editando a la persona cuyo ID es 5.
+     */
+    var idPersonaEditar = null;
+
+
+    /*
+     * ============================================================
+     * FUNCIÓN LLENATABLA()
+     * ============================================================
+     *
+     * OBJETIVO:
+     * Construir las filas de la tabla a partir de una lista
+     * de personas y añadir los botones Borrar y Modificar.
+     *
+     * PARÁMETROS:
+     *
+     * aTabla:
+     *   Array que contiene las personas recibidas del servidor.
+     *
+     * cuerpoTabla:
+     *   Elemento HTML <tbody> donde se van a insertar las filas.
+     *
+     * Esta función se utiliza tanto al cargar el listado inicial
+     * como después de insertar, modificar o borrar una persona.
+     */
+    function LlenaTabla(aTabla, cuerpoTabla) {
+
+      /*
+       * cuerpoTabla.innerHTML = ""
+       *
+       * Vacía el contenido HTML del cuerpo de la tabla.
+       *
+       * Es necesario hacerlo antes de crear las filas nuevas.
+       *
+       * Si no lo hiciéramos, cada vez que actualizáramos el listado
+       * se añadirían filas nuevas debajo de las anteriores,
+       * mostrando personas duplicadas.
+       *
+       * Al vaciarlo, reconstruimos la tabla con los datos actuales.
+       */
+      cuerpoTabla.innerHTML = "";
+
+      /*
+       * Declaramos las variables que utilizaremos para construir
+       * las filas, las celdas y los botones.
+       *
+       * fila:
+       *   Guardará la fila de una persona.
+       *
+       * td:
+       *   Guardará una celda de la tabla.
+       *
+       * boton:
+       *   Guardará el botón Borrar.
+       *
+       * btnModificar:
+       *   Guardará el botón Modificar.
+       */
+      var fila, td, boton, btnModificar;
+
+      /*
+       * BUCLE FOR
+       *
+       * Recorre el array aTabla.
+       *
+       * i comienza en 0, porque los arrays de JavaScript
+       * utilizan índices que empiezan en cero.
+       *
+       * i < aTabla.length:
+       *   El bucle continúa mientras i sea menor que el número
+       *   de personas que contiene el array.
+       *
+       * i++:
+       *   Incrementa i en una unidad después de cada vuelta.
+       *
+       * Se utiliza let en lugar de var porque los eventos de los
+       * botones usan i cuando el usuario pulsa esos botones.
+       * Cada iteración del bucle conserva su propio valor de i.
+       */
+      for (let i = 0; i < aTabla.length; i++) {
+
+        /*
+         * Crea_Fila(aTabla[i])
+         *
+         * aTabla[i] obtiene el objeto de la persona actual.
+         *
+         * Se lo pasamos a Crea_Fila(), que devuelve una fila HTML
+         * con los datos de esa persona.
+         */
+        fila = Crea_Fila(aTabla[i]);
+
+        /*
+         * Añade la fila creada al <tbody>.
+         *
+         * A partir de aquí, la fila forma parte de la tabla
+         * que ve el usuario en la página.
+         */
+        cuerpoTabla.appendChild(fila);
+
+
+        /*
+         * ========================================================
+         * CREACIÓN DE LA CELDA Y EL BOTÓN BORRAR
+         * ========================================================
+         */
+
+        /*
+         * Creamos una celda adicional para colocar el botón Borrar.
+         *
+         * Las celdas con los datos de la persona ya se han creado
+         * mediante Crea_Fila().
+         *
+         * Ahora añadimos una columna destinada a las acciones.
+         */
+        td = document.createElement("td");
+
+        /*
+         * Introducimos la nueva celda dentro de la fila actual.
+         */
+        fila.appendChild(td);
+
+        /*
+         * Creamos un elemento HTML <button>.
+         *
+         * Este botón permitirá borrar a la persona de esa fila.
+         */
+        boton = document.createElement("button");
+
+        /*
+         * Establecemos el texto que verá el usuario en el botón.
+         *
+         * textContent cambia el contenido textual del elemento.
+         */
+        boton.textContent = "Borrar";
+
+        /*
+         * Introducimos el botón dentro de la celda que acabamos
+         * de crear.
+         */
+        td.appendChild(boton);
+
+
+        /*
+         * ========================================================
+         * CREACIÓN DE LA CELDA Y EL BOTÓN MODIFICAR
+         * ========================================================
+         */
+
+        /*
+         * Creamos el botón que permitirá editar a la persona.
+         */
+        btnModificar = document.createElement("button");
+
+        /*
+         * Establecemos el texto visible del botón.
+         */
+        btnModificar.textContent = "Modificar";
+
+        /*
+         * Creamos una segunda celda para colocar este botón.
+         *
+         * Esta nueva asignación de td hace que la variable pase
+         * a referirse a la nueva celda.
+         *
+         * La celda anterior ya está añadida a la fila y no se pierde.
+         */
+        td = document.createElement("td");
+
+        /*
+         * Añadimos la celda del botón Modificar a la fila.
+         */
+        fila.appendChild(td);
+
+        /*
+         * Introducimos el botón Modificar dentro de su celda.
+         */
+        td.appendChild(btnModificar);
+
+
+        /*
+         * ========================================================
+         * EVENTO CLICK DEL BOTÓN BORRAR
+         * ========================================================
+         *
+         * addEventListener("click", function () { ... })
+         *
+         * Asocia una función al evento click del botón.
+         *
+         * El código de esa función no se ejecuta al crear el botón,
+         * sino cuando el usuario pulsa sobre él.
+         */
+        boton.addEventListener("click", function () {
+
+          /*
+           * aTabla[i] obtiene a la persona correspondiente
+           * a la fila en la que se ha pulsado Borrar.
+           *
+           * .ID obtiene el identificador de esa persona.
+           *
+           * Guardamos el ID en la variable id porque el servidor
+           * necesita saber qué persona debe borrar.
+           */
+          var id = aTabla[i].ID;
+
+          /*
+           * confirm()
+           *
+           * Muestra una ventana de confirmación al usuario.
+           *
+           * Si pulsa Aceptar, devuelve true y se ejecuta el código
+           * que está dentro del if.
+           *
+           * Si pulsa Cancelar, devuelve false y no se realiza
+           * la petición para borrar.
+           */
+          if (confirm("¿Quieres borrar esta persona?")) {
+
+            /*
+             * ====================================================
+             * PETICIÓN AJAX PARA BORRAR
+             * ====================================================
+             *
+             * peti.peticion() es un método de la clase pAJAX
+             * definida en utilAJAX.js.
+             *
+             * Se utiliza para enviar datos al servidor sin
+             * recargar toda la página.
+             *
+             * Los argumentos utilizados son:
+             *
+             * 1. "servidor.php":
+             *    Archivo que recibirá la petición.
+             *
+             * 2. "POST":
+             *    Método HTTP utilizado para enviar los datos.
+             *
+             * 3. function(respuesta):
+             *    Función que procesará la respuesta recibida.
+             *
+             * 4. JSON.stringify(...):
+             *    Datos que se envían en formato JSON.
+             */
+            peti.peticion("servidor.php", "POST", function (respuesta) {
+
+              /*
+               * JSON.parse(respuesta)
+               *
+               * La respuesta de AJAX llega como texto.
+               *
+               * JSON.parse() convierte ese texto JSON en un valor
+               * de JavaScript, normalmente un array de personas
+               * en este ejercicio.
+               *
+               * Guardamos el resultado en personas.
+               */
+              var personas = JSON.parse(respuesta);
+
+              /*
+               * Buscamos el elemento <tbody> mediante su ID.
+               *
+               * En el HTML, este elemento tiene id="filas_tabla".
+               *
+               * getElementById() devuelve la referencia al elemento.
+               */
+              var cuerpoTabla = document.getElementById("filas_tabla");
+
+              /*
+               * Volvemos a construir la tabla utilizando la respuesta
+               * del servidor.
+               *
+               * De esta forma, después del borrado, se muestran
+               * los datos actualizados.
+               */
+              LlenaTabla(personas, cuerpoTabla);
+
+            }, JSON.stringify({ servicio: "borrar", id }));
+
+            /*
+             * JSON.stringify()
+             *
+             * Convierte un objeto JavaScript en un texto JSON.
+             *
+             * El objeto enviado contiene:
+             *
+             * servicio: "borrar"
+             *   Indica al servidor qué operación se solicita.
+             *
+             * id
+             *   Es el identificador de la persona que se quiere borrar.
+             *
+             * La forma abreviada "id" equivale a escribir "id: id".
+             *
+             * El servidor recibe estos datos y realiza la operación
+             * correspondiente según su implementación.
+             */
+          }
+
+          /*
+           * Si el usuario pulsa Cancelar en la ventana confirm(),
+           * el if no se ejecuta y no se envía la petición AJAX.
+           */
+        });
+
+
+        /*
+         * ========================================================
+         * EVENTO CLICK DEL BOTÓN MODIFICAR
+         * ========================================================
+         *
+         * Esta función se ejecuta cuando el usuario pulsa Modificar
+         * en la fila de una persona.
+         */
+        btnModificar.addEventListener("click", function () {
+
+          /*
+           * Obtenemos el ID de la persona correspondiente a la fila.
+           *
+           * Guardamos ese ID en una variable local llamada id,
+           * que utilizaremos para solicitar sus datos al servidor.
+           */
+          var id = aTabla[i].ID;
+
+          /*
+           * Guardamos también el ID en idPersonaEditar.
+           *
+           * Esta variable es global y será consultada más adelante
+           * cuando el usuario pulse el botón Añadir/Guardar cambios.
+           *
+           * Como contiene un ID, el programa sabrá que se trata
+           * de una modificación y no de una inserción.
+           */
+          idPersonaEditar = aTabla[i].ID;
+
+          /*
+           * ====================================================
+           * PETICIÓN AJAX PARA RECUPERAR UNA PERSONA POR SU ID
+           * ====================================================
+           *
+           * Enviamos una petición al servidor para obtener los datos
+           * de la persona que queremos modificar.
+           *
+           * Los argumentos son:
+           *
+           * "servidor.php":
+           *   Archivo que recibe la petición.
+           *
+           * "POST":
+           *   Método HTTP utilizado.
+           *
+           * function(respuesta):
+           *   Función que procesa la respuesta.
+           *
+           * JSON.stringify(...):
+           *   Datos enviados para identificar la operación y la persona.
+           */
+          peti.peticion("servidor.php", "POST", function (respuesta) {
+
+            /*
+             * Convertimos la respuesta JSON en un objeto JavaScript.
+             *
+             * En este caso, persona representa los datos de la persona
+             * que el usuario ha seleccionado para modificar.
+             */
+            var persona = JSON.parse(respuesta);
+
+            /*
+             * Mostramos el formulario añadiendo la clase CSS "ver".
+             *
+             * En el CSS de tu página, esa clase hace que el formulario
+             * se muestre en lugar de permanecer oculto.
+             */
+            formPersonas.classList.add("ver");
+
+            /*
+             * Rellenamos los campos del formulario con los datos
+             * que hemos recibido del servidor.
+             *
+             * document.getElementById("dni"):
+             *   Busca el campo que tiene id="dni".
+             *
+             * .value:
+             *   Permite consultar o cambiar el valor de un campo.
+             *
+             * persona.DNI:
+             *   Obtiene la propiedad DNI del objeto recibido.
+             */
+            document.getElementById("dni").value = persona.DNI;
+
+            /*
+             * Rellenamos el campo Nombre con el nombre de la persona.
+             */
+            document.getElementById("nombre").value = persona.NOMBRE;
+
+            /*
+             * Rellenamos el campo Apellidos con los apellidos
+             * de la persona.
+             */
+            document.getElementById("apellidos").value = persona.APELLIDOS;
+
+            /*
+             * Cuando termina esta función, el formulario queda visible
+             * y relleno con los datos que se pueden modificar.
+             *
+             * El usuario puede editar los campos y después pulsar
+             * el botón Añadir/Guardar cambios.
+             */
+
+          }, JSON.stringify({ servicio: "selPersonaID", id }));
+
+          /*
+           * Los datos enviados al servidor son:
+           *
+           * servicio: "selPersonaID"
+           *   Identifica la operación de selección por ID.
+           *
+           * id
+           *   Identifica a la persona que queremos recuperar.
+           *
+           * El servidor debe devolver los datos de esa persona
+           * para que puedan mostrarse en el formulario.
+           */
+        });
+
+        /*
+         * Fin de la vuelta actual del bucle.
+         *
+         * El programa continúa con la siguiente persona del array
+         * hasta que se hayan creado todas las filas y botones.
+         */
+      }
+    }
+
+
+    /*
+     * ============================================================
+     * CREACIÓN DEL OBJETO AJAX
+     * ============================================================
+     *
+     * Creamos un objeto a partir de la clase pAJAX.
+     *
+     * pAJAX está definida en el archivo utilAJAX.js, que se carga
+     * antes de este script.
+     *
+     * Guardamos el objeto en peti para poder llamar a su método
+     * peticion() desde distintas funciones y eventos.
+     *
+     * Gracias a este objeto, podemos realizar las peticiones AJAX
+     * necesarias para listar, borrar, modificar e insertar personas.
+     */
+    var peti = new pAJAX();
+
+
+    /*
+     * ============================================================
+     * FUNCIÓN LISTARPERSONAS()
+     * ============================================================
+     *
+     * OBJETIVO:
+     * Solicitar al servidor el listado de personas y mostrarlo
+     * en la tabla de la página.
+     *
+     * Esta función se ejecuta inicialmente cuando se carga
+     * el script, mediante la llamada ListarPersonas() que aparece
+     * más abajo.
+     */
+    function ListarPersonas() {
+
+      /*
+       * Enviamos una petición AJAX a servidor.php utilizando POST.
+       *
+       * La petición lleva el servicio "listar", que indica al servidor
+       * que queremos recuperar el listado de personas.
+       *
+       * Cuando llega la respuesta, se ejecuta la función callback.
+       */
+      peti.peticion("servidor.php", "POST", function (respuesta) {
+
+        /*
+         * Convertimos la respuesta JSON recibida en datos JavaScript.
+         *
+         * En este ejercicio, personas será el array que contiene
+         * las personas que se van a mostrar en la tabla.
+         */
+        var personas = JSON.parse(respuesta);
+
+        /*
+         * console.log(personas)
+         *
+         * Muestra el contenido de personas en la consola del navegador.
+         *
+         * Es útil durante el desarrollo para comprobar qué datos
+         * llegan del servidor.
+         *
+         * No es necesario para construir la tabla.
+         */
+        console.log(personas);
+
+        /*
+         * Obtenemos el cuerpo de la tabla, cuyo ID en el HTML
+         * es "filas_tabla".
+         */
+        var cuerpoTabla = document.getElementById("filas_tabla");
+
+        /*
+         * Llamamos a LlenaTabla() para construir las filas
+         * y los botones a partir del array recibido.
+         */
+        LlenaTabla(personas, cuerpoTabla);
+
+      }, JSON.stringify({ servicio: "listar" }));
+
+      /*
+       * JSON.stringify({ servicio: "listar" })
+       *
+       * Crea el texto JSON que se envía al servidor.
+       *
+       * La propiedad servicio indica qué operación se solicita.
+       */
+    }
+
+
+    /*
+     * ============================================================
+     * LLAMADA INICIAL A LISTARPERSONAS()
+     * ============================================================
+     *
+     * Al escribir ListarPersonas(), ejecutamos la función.
+     *
+     * Esto hace que, al cargar la página, se solicite el listado
+     * de personas y se intente mostrar en la tabla automáticamente.
+     *
+     * El usuario no necesita pulsar un botón para cargar el listado.
+     */
+    ListarPersonas();
+
+
+    /*
+     * ============================================================
+     * OBTENCIÓN DE LOS ELEMENTOS DEL HTML
+     * ============================================================
+     */
+
+    /*
+     * Buscamos el botón que permite abrir el formulario para crear
+     * una persona nueva.
+     *
+     * En el HTML, ese botón tiene id="btNuevaPersona".
+     */
+    var nuevaPersona = document.getElementById("btNuevaPersona");
+
+    /*
+     * Buscamos el contenedor que contiene el formulario.
+     *
+     * En el HTML, ese contenedor tiene id="formPersonas".
+     *
+     * Guardamos la referencia para poder mostrarlo u ocultarlo
+     * desde distintos eventos.
+     */
+    var formPersonas = document.getElementById("formPersonas");
+
+
+    /*
+     * ============================================================
+     * EVENTO DEL BOTÓN NUEVA PERSONA
+     * ============================================================
+     *
+     * Se ejecuta cuando el usuario pulsa el botón Nueva persona.
+     *
+     * Su objetivo es preparar el formulario para una inserción nueva.
+     */
+    nuevaPersona.addEventListener("click", function () {
+
+      /*
+       * Añadimos la clase CSS "ver" al formulario.
+       *
+       * La clase "ver" permite mostrar el formulario en la página.
+       */
+      formPersonas.classList.add("ver");
+
+      /*
+       * Restablecemos la variable de edición.
+       *
+       * Si antes habíamos seleccionado a una persona para modificarla,
+       * aquí eliminamos ese estado.
+       *
+       * Al establecer null, indicamos que ahora queremos insertar
+       * una persona nueva, no modificar la persona anterior.
+       */
+      idPersonaEditar = null;
+
+      /*
+       * Limpiamos el campo DNI.
+       *
+       * La propiedad value representa el valor actual del campo.
+       * Al asignarle una cadena vacía, dejamos el campo sin contenido.
+       */
+      document.getElementById("dni").value = "";
+
+      /*
+       * Limpiamos el campo Nombre.
+       */
+      document.getElementById("nombre").value = "";
+
+      /*
+       * Limpiamos el campo Apellidos.
+       */
+      document.getElementById("apellidos").value = "";
+
+      /*
+       * Resultado:
+       *   - El formulario está visible.
+       *   - No hay ninguna persona seleccionada para editar.
+       *   - Los tres campos están vacíos.
+       *
+       * El usuario puede introducir los datos de la nueva persona.
+       */
+    });
+
+
+    /*
+     * ============================================================
+     * EVENTO DEL BOTÓN CANCELAR
+     * ============================================================
+     *
+     * El botón Cancelar permite cerrar el formulario sin continuar
+     * con la operación que el usuario estaba preparando.
+     */
+
+    /*
+     * Buscamos el botón que tiene id="btCancelar".
+     */
+    var cancelarPersona = document.getElementById("btCancelar");
+
+    /*
+     * Añadimos el evento click al botón Cancelar.
+     *
+     * El contenido de esta función se ejecuta cuando el usuario
+     * pulsa ese botón.
+     */
+    cancelarPersona.addEventListener("click", function () {
+
+      /*
+       * Quitamos la clase CSS "ver".
+       *
+       * Según el CSS de tu página, esto oculta el formulario.
+       */
+      formPersonas.classList.remove("ver");
+
+      /*
+       * Restablecemos el modo de edición.
+       *
+       * Es importante hacerlo también al cancelar.
+       *
+       * Por ejemplo:
+       *   1. El usuario pulsa Modificar en una persona.
+       *   2. El formulario se rellena con sus datos.
+       *   3. El usuario pulsa Cancelar.
+       *   4. Después pulsa Nueva persona.
+       *
+       * Al poner idPersonaEditar a null, evitamos que el programa
+       * interprete la siguiente operación como una modificación.
+       */
+      idPersonaEditar = null;
+    });
+
+
+    /*
+     * ============================================================
+     * EVENTO DEL BOTÓN AÑADIR / GUARDAR CAMBIOS
+     * ============================================================
+     *
+     * Este botón se utiliza tanto para añadir una persona nueva
+     * como para guardar los cambios de una persona existente.
+     *
+     * La operación se decide según el valor de idPersonaEditar.
+     */
+
+    /*
+     * Buscamos el botón que tiene id="btAnade".
+     */
+    var botonAnade = document.getElementById("btAnade");
+
+    /*
+     * Asociamos una función al evento click.
+     *
+     * Toda la lógica de validación, selección de operación
+     * y envío de datos se ejecuta al pulsar este botón.
+     */
+    botonAnade.addEventListener("click", function () {
+
+      /*
+       * ========================================================
+       * PRIMER PASO: OBTENER LOS VALORES DEL FORMULARIO
+       * ========================================================
+       *
+       * Recuperamos el texto introducido por el usuario
+       * en cada campo.
+       *
+       * .value devuelve el valor actual de un input.
+       *
+       * Guardamos cada valor en una variable para poder
+       * validarlo y enviarlo después al servidor.
+       */
+
+      // Obtiene el valor del campo DNI.
+      var dni = document.getElementById("dni").value;
+
+      // Obtiene el valor del campo Nombre.
+      var nombre = document.getElementById("nombre").value;
+
+      // Obtiene el valor del campo Apellidos.
+      var apellidos = document.getElementById("apellidos").value;
+
+
+      /*
+       * ========================================================
+       * SEGUNDO PASO: VALIDAR QUE LOS CAMPOS NO ESTÉN VACÍOS
+       * ========================================================
+       *
+       * Antes de enviar la petición, comprobamos que los tres
+       * campos contengan algún texto distinto de espacios.
+       *
+       * trim():
+       *   Elimina los espacios en blanco del principio y del final
+       *   de una cadena, sin modificar la variable original.
+       *
+       * === "":
+       *   Comprueba si la cadena resultante está vacía.
+       *
+       * ||:
+       *   Es el operador lógico OR, que significa "O".
+       *
+       * Por tanto, toda la condición será verdadera si:
+       *   - El DNI está vacío, O
+       *   - El nombre está vacío, O
+       *   - Los apellidos están vacíos.
+       */
+      if (dni.trim() === "" || nombre.trim() === "" || apellidos.trim() === "") {
+
+        /*
+         * Si al menos un campo está vacío, mostramos un aviso.
+         *
+         * alert() abre una ventana con un mensaje para el usuario.
+         */
+        alert("Todos los campos son obligatorios");
+
+        /*
+         * return detiene la ejecución de esta función.
+         *
+         * Es muy importante porque evita que el código continúe
+         * hasta la petición AJAX.
+         *
+         * Si quitáramos el return, después del aviso el programa
+         * seguiría ejecutando las instrucciones siguientes.
+         */
+        return;
+      }
+
+
+      /*
+       * ========================================================
+       * TERCER PASO: ELEGIR ENTRE INSERTAR Y MODIFICAR
+       * ========================================================
+       *
+       * Declaramos la variable servicio.
+       *
+       * Su valor indicará al servidor qué operación queremos realizar.
+       */
+      var servicio;
+
+      /*
+       * Comprobamos el valor de idPersonaEditar.
+       *
+       * Si es null:
+       *   No estamos editando una persona existente.
+       *   Queremos crear una persona nueva.
+       *
+       * Si no es null:
+       *   Hay un ID guardado.
+       *   Queremos modificar la persona correspondiente a ese ID.
+       */
+      if (idPersonaEditar === null) {
+
+        /*
+         * No hay ninguna persona seleccionada para editar.
+         * Por tanto, seleccionamos el servicio de inserción.
+         */
+        servicio = "insertar";
+
+      } else {
+
+        /*
+         * Hay un ID de edición.
+         * Por tanto, seleccionamos el servicio de modificación.
+         */
+        servicio = "modificar";
+      }
+
+
+      /*
+       * ========================================================
+       * CUARTO PASO: ENVIAR LOS DATOS MEDIANTE AJAX
+       * ========================================================
+       *
+       * Una vez validados los campos y seleccionada la operación,
+       * enviamos la petición al servidor.
+       *
+       * No enviamos los datos si la validación anterior ha fallado,
+       * porque en ese caso la función ya habría terminado con return.
+       */
+      peti.peticion("servidor.php", "POST", function (respuesta) {
+
+        /*
+         * ======================================================
+         * QUINTO PASO: PROCESAR LA RESPUESTA DEL SERVIDOR
+         * ======================================================
+         *
+         * Cuando se recibe la respuesta, se ejecuta esta función.
+         *
+         * respuesta contiene el texto recibido del servidor.
+         *
+         * JSON.parse() convierte ese texto JSON en datos JavaScript.
+         *
+         * En este ejercicio, se espera recibir el listado actualizado
+         * de personas para volver a construir la tabla.
+         */
+        var personas = JSON.parse(respuesta);
+
+        /*
+         * Buscamos el <tbody> de la tabla.
+         *
+         * Ese elemento tiene id="filas_tabla" en el HTML.
+         */
+        var cuerpoTabla = document.getElementById("filas_tabla");
+
+        /*
+         * Actualizamos la tabla con la respuesta recibida.
+         *
+         * LlenaTabla() vacía las filas anteriores, crea las nuevas
+         * y añade los botones de Borrar y Modificar.
+         */
+        LlenaTabla(personas, cuerpoTabla);
+
+        /*
+         * Ocultamos el formulario después de recibir la respuesta
+         * y actualizar la tabla.
+         *
+         * classList.remove("ver") elimina la clase que lo mostraba.
+         */
+        formPersonas.classList.remove("ver")
+
+        /*
+         * Restablecemos el modo de edición.
+         *
+         * De este modo, cuando termine una inserción o modificación,
+         * el programa no conserva el ID anterior como si todavía
+         * estuviéramos editando a esa persona.
+         */
+        idPersonaEditar = null;
+
+      }, JSON.stringify({ servicio, id : idPersonaEditar, dni, nombre, apellidos }));
+
+      /*
+       * ========================================================
+       * DATOS QUE SE ENVÍAN EN LA PETICIÓN
+       * ========================================================
+       *
+       * JSON.stringify() convierte el objeto JavaScript en texto JSON.
+       *
+       * servicio:
+       *   Contiene "insertar" o "modificar", según la condición anterior.
+       *
+       * id: idPersonaEditar
+       *   Envía el ID de la persona que se quiere modificar.
+       *   Si se trata de una inserción, idPersonaEditar vale null.
+       *
+       * dni:
+       *   Contiene el DNI escrito en el formulario.
+       *
+       * nombre:
+       *   Contiene el nombre escrito en el formulario.
+       *
+       * apellidos:
+       *   Contiene los apellidos escritos en el formulario.
+       *
+       * La escritura abreviada de las propiedades dni, nombre
+       * y apellidos equivale a escribir:
+       *
+       * dni: dni,
+       * nombre: nombre,
+       * apellidos: apellidos
+       *
+       * El servidor recibe estos datos y utiliza el servicio
+       * indicado para realizar la operación correspondiente.
+       */
+    });
+
+</script>
