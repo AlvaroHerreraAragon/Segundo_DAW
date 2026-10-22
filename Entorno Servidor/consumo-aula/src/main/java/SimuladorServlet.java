@@ -109,11 +109,11 @@ public class SimuladorServlet extends HttpServlet {
             return;
         }
 
-        double consumoOrdenadores = (cantidadOrdenadores * 200 * horasOrdenadores * dias) / 1000;
-        double consumomonitores = (cantidadMonitores * 40 * horasMonitores * dias) / 1000;
-        double consumoProyectores = (cantidadProyectores * 300 * horasProyectores * dias) / 1000;
+        double consumoOrdenadores = (cantidadOrdenadores * 200 * horasOrdenadores * dias) / 1000.0;
+        double consumoMonitores = (cantidadMonitores * 40 * horasMonitores * dias) / 1000.0;
+        double consumoProyectores = (cantidadProyectores * 300 * horasProyectores * dias) / 1000.0;
 
-        double consumoTotal = consumoOrdenadores + consumoProyectores + consumomonitores;
+        double consumoTotal = consumoOrdenadores + consumoProyectores + consumoMonitores;
 
         double tarifaA = 5 + (consumoTotal * 0.20);
         double tarifaB = 0.0;
@@ -162,12 +162,26 @@ public class SimuladorServlet extends HttpServlet {
         }
 
         if (cantidadMonitores > 0) {
-            consumos.add(new ConsumoEquipo("Monitor", cantidadMonitores, 40, horasMonitores, consumomonitores));
+            consumos.add(new ConsumoEquipo("Monitor", cantidadMonitores, 40, horasMonitores, consumoMonitores));
         }
 
         if (cantidadProyectores > 0) {
             consumos.add(new ConsumoEquipo("Proyector", cantidadProyectores, 300, horasProyectores, consumoProyectores));
         }
 
+        request.setAttribute("consumos", consumos);
+        request.setAttribute("aula", aula);
+        request.setAttribute("dias", dias);
+        request.setAttribute("presupuesto", presupuesto);
+        request.setAttribute("consumoTotal", consumoTotal);
+        request.setAttribute("tarifaA", tarifaA);
+        request.setAttribute("tarifaB", tarifaB);
+        request.setAttribute("recomendacion", recomendacion);
+        request.setAttribute("ahorro", ahorro);
+        request.setAttribute("estadoPresupuesto", estadoPresupuesto);
+        request.setAttribute("diferenciaImporte", diferenciaImporte);
+
+        request.getRequestDispatcher("/resultado.jsp").forward(request, response);
+        return;
     }
 }
