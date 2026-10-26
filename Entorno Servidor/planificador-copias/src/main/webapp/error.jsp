@@ -1,17 +1,19 @@
-<%-- 
-    Document   : error
-    Created on : 22 oct 2026, 10:38:18
-    Author     : daw2
---%>
-
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html>
-<html>
+<html lang="es">
     <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
+        <meta charset="UTF-8">
+        <title>Pedido rechazado.</title>
     </head>
     <body>
-        <h1>Hello World!</h1>
+        <h1>Pedido rechazado.</h1>
+
+        <p>
+            <!-- Aquí se pinta automáticamente el texto que le mandamos desde el Servlet -->
+            <c:out value="${mensajeError}" />
+        </p>
+
+        <a href="index.html">Volver al formulario</a>
     </body>
 </html>
