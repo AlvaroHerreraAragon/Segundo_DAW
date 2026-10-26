@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ejercicio Listado Personas. AJAX</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 30px;
+    }
+
+    h3 {
+      color: #b22222;
+    }
+
+    .formPersonas {
+      display: none;
+      position: fixed;
+      top: 20%;
+      left: 20%;
+      z-index: 11;
+      background-color: pink;
+      border: 2px solid maroon;
+      border-radius: 15px;
+      padding: 1em;
+      color: #800000;
+      box-shadow: 0 4px 12px #999;
+    }
+
+    .formPersonas.ver {
+      display: block;
+    }
+
+    .formPersonas div label {
+      display: block;
+      margin-top: .5em;
+    }
+
+    .formPersonas .btn {
+      display: block;
+      margin-top: 1em;
+    }
+
+    button {
+      cursor: pointer;
+      padding: 5px 10px;
+    }
+
+    table {
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+
+    th,
+    td {
+      padding: 8px;
+    }
+
+    th {
+      background: #eee;
+    }
+
+    td button {
+      margin: 2px;
+    }
+
+    #mensaje {
+      margin-top: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <h3>Registro de Usuarios</h3>
+
+  <div id="formPersonas" class="formPersonas">
+    <fieldset>
+      <legend id="tituloFormulario">Alta en el servicio</legend>
+      <div>
+        <label for="dni">DNI</label>
+        <input type="text" id="dni" size="10" maxlength="9" value="27473339T">
+      </div>
+      <div>
+        <label for="nombre">Nombre</label>
+        <input type="text" id="nombre" value="Marco Elio">
+      </div>
+      <div>
+        <label for="apellidos">Apellidos</label>
+        <input type="text" id="apellidos" size="40" value="García Gomariz">
+      </div>
+      <div class="btn">
+        <button id="btAnade" type="button">Añadir</button>
+        <button id="btCancelar" type="button">Cancelar</button>
+      </div>
+    </fieldset>
+  </div>
+
+  <button class="btn" id="btNuevaPersona" type="button">Nueva persona</button>
+  <br><br>
+  <table id="tabla_personas" border="1">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>DNI</th>
+        <th>NOMBRE</th>
+        <th>APELLIDOS</th>
+        <th>Borrar</th>
+        <th>Editar</th>
+      </tr>
+    </thead>
+    <tbody id="filas_tabla"></tbody>
+  </table>
+  <p id="mensaje"></p>
+
+
+  <script src="utilAJAX.js"></script>
+  <script>
+
+    function Crea_Fila(aCol) {
+      var fila = document.createElement("tr");
+      var col; var cont;
+      for (var i in aCol) {
+        col = document.createElement("td");
+        cont = document.createTextNode(aCol[i]);
+        col.appendChild(cont);
+        fila.appendChild(col);
+      }
+      return fila;
+    }
+
+    var idPersonaEditar = null;
+
+    function LlenaTabla(aTabla, cuerpoTabla) {
+      cuerpoTabla.innerHTML = "";
+      var fila, td, boton, btnModificar;
+      for (let i = 0; i < aTabla.length; i++) {
+        fila = Crea_Fila(aTabla[i]);
+        cuerpoTabla.appendChild(fila);
+
+        td = document.createElement("td");
+        fila.appendChild(td);
+
+        boton = document.createElement("button");
+        boton.textContent = "Borrar";
+        td.appendChild(boton);
+
+        btnModificar = document.createElement("button");
+        btnModificar.textContent = "Modificar";
+
+        td = document.createElement("td");
+        fila.appendChild(td);
+        td.appendChild(btnModificar);
+
+        boton.addEventListener("click", function () {
+          var id = aTabla[i].ID;
+
+          if (confirm("¿Quieres borrar esta persona?")) {
+            peti.peticion("servidor.php", "POST", function (respuesta) {
+              var personas = JSON.parse(respuesta);
+
+              var cuerpoTabla = document.getElementById("filas_tabla");
+              LlenaTabla(personas, cuerpoTabla);
+            }, JSON.stringify({ servicio: "borrar", id }));
+          }
+
+        });
+
+        btnModificar.addEventListener("click", function () {
+          var id = aTabla[i].ID;
+          idPersonaEditar = aTabla[i].ID;
+
+          peti.peticion("servidor.php", "POST", function (respuesta) {
+            var persona = JSON.parse(respuesta);
+
+            formPersonas.classList.add("ver");
+
+            document.getElementById("dni").value = persona.DNI;
+            document.getElementById("nombre").value = persona.NOMBRE;
+            document.getElementById("apellidos").value = persona.APELLIDOS;
+
+          }, JSON.stringify({ servicio: "selPersonaID", id }));
+        });
+      }
+    }
+
+
+    function ListarPersonas() {
+      var p = {
+        servicio: "listar"
+      };
+
+      var parametros = {
+        method: 'POST',
+        body: JSON.stringify(p)
+      };
+
+      fetch("servidor.php", parametros)
+        .then(r => r.json())
+        .then(personas => {
+          console.log(personas);
+
+          var cuerpoTabla = document.getElementById("filas_tabla");
+          LlenaTabla(personas, cuerpoTabla);
+        });
+    }
+
+    ListarPersonas();
+
+
+    var nuevaPersona = document.getElementById("btNuevaPersona");
+    var formPersonas = document.getElementById("formPersonas");
+
+    nuevaPersona.addEventListener("click", function () {
+      formPersonas.classList.add("ver");
+      idPersonaEditar = null;
+      document.getElementById("dni").value = "";
+      document.getElementById("nombre").value = "";
+      document.getElementById("apellidos").value = "";
+    });
+
+    var cancelarPersona = document.getElementById("btCancelar");
+
+    cancelarPersona.addEventListener("click", function () {
+      formPersonas.classList.remove("ver");
+      idPersonaEditar = null;
+    });
+
+    var botonAnade = document.getElementById("btAnade");
+    botonAnade.addEventListener("click", function () {
+      var dni = document.getElementById("dni").value;
+      var nombre = document.getElementById("nombre").value;
+      var apellidos = document.getElementById("apellidos").value;
+
+      if (dni.trim() === "" || nombre.trim() === "" || apellidos.trim() === "") {
+        alert("Todos los campos son obligatorios");
+        return;
+      }
+
+      var servicio;
+
+      if (idPersonaEditar === null) {
+        servicio = "insertar";
+      } else {
+        servicio = "modificar";
+      }
+
+      peti.peticion("servidor.php", "POST", function (respuesta) {
+        var personas = JSON.parse(respuesta);
+        var cuerpoTabla = document.getElementById("filas_tabla");
+        LlenaTabla(personas, cuerpoTabla);
+        formPersonas.classList.remove("ver")
+        idPersonaEditar = null;
+      }, JSON.stringify({ servicio, id: idPersonaEditar, dni, nombre, apellidos }));
+    });
+
+  </script>
+</body>
+
+</html>
