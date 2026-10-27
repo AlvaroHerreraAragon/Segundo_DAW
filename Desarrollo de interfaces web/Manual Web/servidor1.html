@@ -1,16 +1,216 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servidor 1</title>
+    <title>Apache Tomcat en Windows 11</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background: #eff6ff;
+        }
+
+        header {
+            background: #1e3a8a;
+            color: white;
+            padding: 25px 5%;
+            text-align: center;
+        }
+
+        nav {
+            background: #172554;
+            padding: 12px 5%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+
+        main {
+            max-width: 950px;
+            margin: 25px auto;
+            padding: 0 18px;
+        }
+
+        section {
+            background: white;
+            padding: 22px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            scroll-margin-top: 55px;
+        }
+
+        h2 {
+            color: #1e40af;
+        }
+
+        a {
+            color: #1d4ed8;
+        }
+
+        pre {
+            background: #111827;
+            color: white;
+            padding: 14px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: Consolas, monospace;
+        }
+
+        .captura-img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 15px auto;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+    </style>
 </head>
 
 <body>
+    <header>
+        <h1>Apache Tomcat 10.1 en Windows 11</h1>
+        <p>Instalación y configuración para ejecutar una aplicación web Java.</p>
+    </header>
+    <nav>
+        <a href="index.html">Inicio</a>
+        <a href="#requisitos">Requisitos</a>
+        <a href="#descarga">Descarga</a>
+        <a href="#instalacion">Instalación y configuración</a>
+        <a href="#prueba">Prueba de funcionamiento</a>
+    </nav>
+    <main>
+        <section>
+            <h2>1. ¿Qué es Apache Tomcat?</h2>
+            <p>
+                Apache Tomcat es un servidor web y contenedor de aplicaciones que permite ejecutar aplicaciones web Java
+                mediante tecnologías como Servlets y JSP. Esta guía explica cómo instalarlo en Windows 11 y comprobar
+                que puede ejecutar código Java.
+            </p>
+        </section>
 
-    
+        <section id="requisitos">
+            <h2>2. Requisitos previos</h2>
+            <ul>
+                <li>Windows 11.</li>
+                <li>Conexión a Internet para descargar el software.</li>
+                <li>Java JDK 21. Tomcat 10.1 requiere Java 11 o una versión posterior.</li>
+            </ul>
+            <h3>Instalar y comprobar Java</h3>
+            <ol>
+                <li>Descarga el JDK desde la página oficial de <a href="https://adoptium.net/temurin/releases/">Eclipse
+                        Temurin</a>. Selecciona JDK 21 para Windows x64.</li>
+                <li>Ejecuta el instalador y completa la instalación.</li>
+                <li>Abre el Símbolo del sistema (CMD) y ejecuta:</li>
+            </ol>
+            <pre><code>java -version 
+javac -version</code></pre>
+            <p>
+                Los comandos deben mostrar la versión instalada. Si no se reconocen, configura las variables de entorno
+                de Java: crea <code>JAVA_HOME</code> con la ruta de la carpeta del JDK y añade
+                <code>%JAVA_HOME%\\bin</code> a la variable <code>Path</code>. Abre un CMD nuevo y vuelve a comprobar
+                los comandos.
+            </p>
+            <p class="captura"><img class="captura-img" src="imagenes/imagen1.png" alt="Versión de Java instalada"></p>
+        </section>
 
+        <section id="descarga">
+            <h2>3. Descargar Apache Tomcat</h2>
+            <ol>
+                <li>Abre la <a href="https://tomcat.apache.org/download-10.cgi">página oficial de descargas de Apache
+                        Tomcat 10</a>.</li>
+                <li>Busca la versión 10.1 y el apartado de distribuciones binarias para Windows.</li>
+                <li>Descarga el instalador de Windows con extensión <code>.exe</code>.</li>
+            </ol>
+            <p class="captura"><img class="captura-img" src="imagenes/imagen2.png" alt="Pagina para descargar Tomcat">
+            </p>
+        </section>
+
+        <section id="instalacion">
+            <h2>4. Instalar y configurar Tomcat</h2>
+            <ol>
+                <li>Ejecuta el archivo <code>.exe</code> descargado y acepta la licencia.</li>
+                <li>Mantén los componentes predeterminados del asistente.</li>
+                <li>Cuando solicite el puerto HTTP, utiliza <code>8080</code>, salvo que esté ocupado.</li>
+                <li>Cuando solicite Java, indica la carpeta donde está instalado el JDK, si no se detecta
+                    automáticamente.</li>
+                <li>Selecciona la carpeta de instalación y termina el asistente. Inicia el servicio de Tomcat si el
+                    instalador ofrece esa opción.</li>
+            </ol>
+            <h3>Comprobar que el servidor está iniciado</h3>
+            <p>Abre un navegador y visita:</p>
+            <pre><code>http://localhost:8080/</code></pre>
+            <p>Si aparece la página de bienvenida de Apache Tomcat, el servidor está funcionando.</p>
+            <p class="captura"><img class="captura-img" src="imagenes/imagen3.png" alt="Pagina de bienvenida Tomcat">
+            </p>
+        </section>
+
+        <section id="prueba">
+            <h2>5. Ejecutar código Java mediante JSP</h2>
+            <ol>
+                <li>Dentro de la carpeta de instalación de Tomcat, abre <code>webapps</code>.</li>
+                <li>Crea una carpeta llamada <code>PruebaJava</code>.</li>
+                <li>Dentro, crea un archivo llamado <code>index.jsp</code>. Comprueba que no termine en
+                    <code>.txt</code>.
+                </li>
+                <li>Copia este contenido en el archivo y guárdalo:</li>
+            </ol>
+            <pre><code>&lt;%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Prueba Java&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Tomcat funciona correctamente&lt;/h1&gt;
+    &lt;%
+        String mensaje = "Java se está ejecutando en el servidor";
+    %&gt;
+    &lt;p&gt;&lt;%= mensaje %&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+            <p>Abre esta dirección en el navegador:</p>
+            <pre><code>http://localhost:8080/PruebaJava/</code></pre>
+            <p>Debe aparecer el encabezado «Tomcat funciona correctamente» y el mensaje generado mediante código Java.
+                Esto comprueba que Tomcat está ejecutando una página JSP.</p>
+            <p class="captura"><img class="captura-img" src="imagenes/imagen4.png"
+                    alt="Comprobacion del funcionamiento de Tomcat"></p>
+        </section>
+
+        <section>
+            <h2>Fuentes oficiales</h2>
+            <ul>
+                <li><a href="https://tomcat.apache.org/download-10.cgi">Descarga de Apache Tomcat 10</a></li>
+                <li><a href="https://tomcat.apache.org/tomcat-10.1-doc/">Documentación de Apache Tomcat 10.1</a></li>
+                <li><a href="https://adoptium.net/temurin/releases/">Descarga de Java JDK (Eclipse Temurin)</a></li>
+            </ul>
+        </section>
+    </main>
 </body>
 
 </html>
