@@ -13,7 +13,7 @@
         <p>${mensajeError}</p>
 
         <%-- Permite volver a la página del catálogo --%>
-        <a href="${pageContext.request.contextPath}/equipos">
+        <a href="/index.html">
             Volver al catálogo
         </a>
     </body>

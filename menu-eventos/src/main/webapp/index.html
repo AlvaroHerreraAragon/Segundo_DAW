@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Menú a punto</title>
+        <style>body{
+            font-family:Arial,sans-serif;
+            max-width:760px;
+            margin:35px auto;
+            padding:0 20px;
+            color:#233d40;
+            line-height:1.5
+        }
+        h1{
+            color:#12685d
+        }
+        fieldset{
+            border:1px solid #b5c9c3;
+            padding:20px;
+            margin:20px 0
+        }
+        legend{
+            font-weight:bold
+        }
+        label{
+            display:block;
+            margin:12px 0 4px
+        }
+        input,select,button{
+            font:inherit;
+            padding:8px
+        }
+        button{
+            background:#12685d;
+            color:white;
+            border:0;
+            padding:12px 20px
+        }
+        .casilla{
+            display:flex;
+            gap:8px;
+            align-items:center
+        }
+        a{
+            color:#12685d
+        }</style></head>
+    <body><h1>Menú a punto</h1><p>Prepara el presupuesto de comida para tu evento.</p><p><a href="catalogo">Consultar menús disponibles</a></p>
+        <form action="pedido" method="post" accept-charset="UTF-8">
+            <fieldset><legend>Cliente y menú</legend>
+                <label for="cliente">Nombre del cliente</label><input id="cliente" name="cliente" type="text" required>
+                <label for="menu">Menú</label><select id="menu" name="menu" required><option value="">Selecciona</option><option value="tradicional">Menú tradicional</option><option value="vegetal">Menú vegetal</option><option value="brunch">Menú brunch</option></select>
+                <label for="personas">Personas (5 a 60)</label><input id="personas" name="personas" type="number" min="5" max="60" step="1" value="10" required>
+                <label for="turno">Turno</label><select id="turno" name="turno" required><option value="comida">Comida</option><option value="cena">Cena</option></select></fieldset>
+            <fieldset><legend>Servicio</legend>
+                <label for="servicio">Servicio</label><select id="servicio" name="servicio" required><option value="recogida">Recogida</option><option value="entrega">Entrega</option></select>
+                <label for="zona">Zona (solo se utiliza con entrega)</label><select id="zona" name="zona"><option value="centro">Centro</option><option value="exterior">Exterior</option></select>
+                <label class="casilla"><input type="checkbox" name="menaje" value="si"> Añadir menaje</label></fieldset>
+            <label class="casilla"><input type="checkbox" name="condiciones" value="aceptadas" required> Acepto las condiciones</label><p><button type="submit">Calcular presupuesto</button></p></form></body></html>
