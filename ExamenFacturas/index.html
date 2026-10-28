@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8" />
+
+    <title>Examen 2. 1ª Evaluación. DWEC</title>
+
+    <style>
+        h3 {
+            color: red;
+        }
+
+        fieldset {
+            width: 400px;
+            margin-top: 2em;
+            margin-bottom: 1em;
+            margin-left: 1em;
+        }
+
+        fieldset label {
+            width: 4.5em;
+            display: inline-block;
+        }
+
+
+
+        /* CSS para el formulario:   */
+        .formFactura {
+            visibility: hidden;
+            opacity: 0;
+            position: absolute;
+            top: 20%;
+            left: 20%;
+            z-index: 11;
+            background-color: pink;
+            border: 2px solid maroon;
+            border-radius: 15px;
+            padding: 1em;
+            color: red;
+            transition: all 1s;
+        }
+
+        .formFactura div label {
+            display: block;
+            margin-top: .5em;
+        }
+
+        .formFactura .btn {
+            display: block;
+            margin-top: 1em;
+        }
+
+
+        .ver {
+            visibility: visible;
+            opacity: 1;
+        }
+    </style>
+
+    <script type="text/javascript">
+
+        let url = "servidor.php";
+        window.onload = () => {
+            console.log("pedimos la lista de factura y la metemos en el select");
+            pedirFacturas();
+            //Añadir el evento onchange al select
+            document.getElementById("factura").onchange = pedirDetalle;
+        }
+
+        const pedirFacturas = () => {
+            let param = {
+                method: "POST",
+                body: JSON.stringify({ servicio: "facturas" })
+            }
+
+            fetch(url, param)
+                .then(r => r.json())
+                .then(d => {
+                    console.log("d: ", d);
+                    llenaSelect(d);
+                });
+
+            const llenaSelect = (datos) => {
+                //Aqui llamamos al select
+                let sel = document.getElementById("factura");
+                let op;
+                datos.forEach(e => {
+                    console.log("elemento e: ", e);
+                    op = document.createElement("option");
+                    op.value = e.id;
+                    op.innerHTML = e.numero + " " + e.fecha;
+                    sel.appendChild(op);
+                });
+            }
+        }
+
+        function pedirDetalle() {
+            let p = {
+                servicio: "detalle",
+                idFactura: this.value
+            };
+
+            let param = {
+                method: "POST",
+                body: JSON.stringify(p)
+            };
+
+            fetch(url, param)
+                .then(r => r.json())
+                .then(d => {
+                    console.log("ID Factura:", p.idFactura);
+                    console.log("Detalles recibidos:", d);
+
+                    pintarTabla(d);
+                });
+        }
+
+        function pintarTabla(datos) {
+            let tabla = document.getElementById("filas_tabla");
+            tabla.innerHTML = "";
+
+            datos.forEach(e => {
+                let fila = document.createElement("tr");
+
+                [e.id, e.cantidad, e.concepto, e.precio, e.tipo_iva].forEach(dato => {
+                    let celda = document.createElement("td");
+                    celda.textContent = dato;
+                    fila.appendChild(celda);
+                });
+
+                tabla.appendChild(fila);
+            });
+        }
+
+
+
+
+    </script>
+</head>
+
+<body>
+
+    <h1>Examen 2. 1ª Evaluación. DWEC</h1>
+    <h3>Consulta de Facturas</h3>
+    <div>
+        <p>
+            <select id="factura">
+                <option value="-1">Selecciona una factura para consultar su detalle</option>
+            </select>
+            <button id="btMuestraFactura">Añadir</button>
+        </p>
+    </div>
+    <div>
+        Detalle de la factura:
+        <p>
+        <table id="detalle" border="1">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>CANTIDAD</th>
+                    <th>CONCEPTO</th>
+                    <th>PRECIO</th>
+                    <th>Tipo IVA</th>
+                    <th>IVA</th>
+                    <th>TOTAL</th>
+                    <th>Modificar</th>
+                    <th>Borrar</th>
+                </tr>
+            </thead>
+
+            <tbody id="filas_tabla">
+
+
+            </tbody>
+
+
+            <tfoot>
+                <tr>
+                    <td colspan="5">TOTALES: </td>
+                    <td id="Tiva">suma iva</td>
+                    <td id="Ttotal">suma TOTAL</td>
+                </tr>
+            </tfoot>
+        </table>
+        </p>
+    </div>
+
+
+    <!--  Formulario de nueva factura  -->
+
+    <div id="formFactura" class="formFactura">
+        <fieldset>
+            <legend id="league">Añadir factura</legend>
+            <p>
+                <label for="numero_factura">Número: </label>
+                <input type="text" id="numero_factura" value="FE" />
+            </p>
+
+            <p>
+                <label for="fecha">Fecha: </label>
+                <input type="date" id="fecha_factura" />
+            </p>
+
+        </fieldset>
+
+        <button id="btAnadeFactura">Añadir factura</button>
+
+        <button id="btCancelarFactura">Cancelar</button>
+
+    </div>
+
+
+
+
+    <!-- Formulario de línea de detalle  -->
+    <div>
+        <fieldset>
+            <legend id="league">Añadir detalle</legend>
+            <p>
+                <label for="cantidad">Cantidad: </label>
+                <input type="text" id="cantidad" size="3" value="5" />
+            </p>
+            <p>
+                <label for="concepto">Concepto: </label>
+                <input type="text" id="concepto" size="44" value="Nuevo detalle" />
+            </p>
+            <p>
+                <label for="precio">precio: </label>
+                <input type="text" id="precio" size="4" value="25" /> €
+            </p>
+
+            <p>
+                <label for="tipo_iva">Tipo IVA: </label>
+                <input type="text" id="tipo_iva" size="2" value="21" /> %
+            </p>
+
+        </fieldset>
+
+        <button id="btAnade" data-idld="-1">Añadir línea de detalle</button>
+
+        <button id="btCancelar">Cancelar</button>
+
+    </div>
+
+
+
+
+
+</body>
+
+</html>
