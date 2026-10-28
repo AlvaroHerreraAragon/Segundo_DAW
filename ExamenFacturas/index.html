@@ -122,20 +122,57 @@
 
             datos.forEach(e => {
                 let fila = document.createElement("tr");
+                let base = e.cantidad * e.precio;
+                let iva = base * (e.tipo_iva / 100);
+                let total = base + iva;
 
-                [e.id, e.cantidad, e.concepto, e.precio, e.tipo_iva].forEach(dato => {
+                [e.id, e.cantidad, e.concepto, e.precio, e.tipo_iva, iva.toFixed(2), total.toFixed(2)].forEach(dato => {
                     let celda = document.createElement("td");
                     celda.textContent = dato;
                     fila.appendChild(celda);
                 });
 
+                let celdaModificar = document.createElement("td");
+                celdaModificar.innerHTML = `<button class="btModificar" data-id="${e.id}">Modificar</button>`;
+                fila.appendChild(celdaModificar);
+                let celdaBorrar = document.createElement("td");
+                celdaBorrar.innerHTML = `<button class="btBorrar" data-id="${e.id}">Borrar</button>`;
+                fila.appendChild(celdaBorrar);
+
                 tabla.appendChild(fila);
+            });
+            eventoBotones();
+        }
+
+        function eventoBotones() {
+            let botonModificar = document.querySelectorAll(".btModificar");
+            let botonBorrar = document.querySelectorAll(".btBorrar");
+
+            botonModificar.forEach(boton => {
+                boton.addEventListener("click", function () {
+                    let id = this.dataset.id;
+                    modificarDetalle(id);
+                });
+            });
+
+            botonBorrar.forEach(boton => {
+                boton.addEventListener("click", function () {
+                    let id = this.dataset.id;
+                    console.log("Llega " + id);
+                });
             });
         }
 
+        function modificarDetalle(id) {
+            let filas_tabla = document.getElementById("filas_tabla").querySelectorAll("tr");
+            filas_tabla.forEach(fila => {
+                let filaID = fila.cells[0].textContent;
+                if (filaID == id) {
 
+                }
 
-
+            });
+        }
     </script>
 </head>
 
