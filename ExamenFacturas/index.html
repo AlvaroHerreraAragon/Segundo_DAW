@@ -62,10 +62,14 @@
 
         let url = "servidor.php";
         window.onload = () => {
-            console.log("pedimos la lista de factura y la metemos en el select");
+            console.log("Hola, he pedido la lista");
             pedirFacturas();
             //Añadir el evento onchange al select
             document.getElementById("factura").onchange = pedirDetalle;
+            document.getElementById("btAnade").onclick = guardarDetalle;
+            document.getElementById("btMuestraFactura").onclick = mostrarFormularioFactura;
+            document.getElementById("btAnadeFactura").onclick = guardarFactura;
+            document.getElementById("btCancelarFactura").onclick = cancelarFactura;
         }
 
         const pedirFacturas = () => {
@@ -109,7 +113,7 @@
             fetch(url, param)
                 .then(r => r.json())
                 .then(d => {
-                    console.log("ID Factura:", p.idFactura);
+                    console.log("ID Facturas:", p.idFactura);
                     console.log("Detalles recibidos:", d);
 
                     pintarTabla(d);
@@ -118,29 +122,59 @@
 
         function pintarTabla(datos) {
             let tabla = document.getElementById("filas_tabla");
+            let sumaCantidades = 0;
+            let sumaIVA = 0;
+            let sumaTOTAL = 0;
+
             tabla.innerHTML = "";
 
             datos.forEach(e => {
                 let fila = document.createElement("tr");
-                let base = e.cantidad * e.precio;
-                let iva = base * (e.tipo_iva / 100);
+
+                let cantidad = parseFloat(e.cantidad);
+                let precio = parseFloat(e.precio);
+                let tipoIVA = parseFloat(e.tipo_iva);
+
+                let base = cantidad * precio;
+                let iva = base * (tipoIVA / 100);
                 let total = base + iva;
 
-                [e.id, e.cantidad, e.concepto, e.precio, e.tipo_iva, iva.toFixed(2), total.toFixed(2)].forEach(dato => {
+                sumaCantidades += cantidad;
+                sumaIVA += iva;
+                sumaTOTAL += total;
+
+                [e.id, cantidad, e.concepto, precio, tipoIVA,
+                iva.toFixed(2), total.toFixed(2)].forEach(dato => {
                     let celda = document.createElement("td");
                     celda.textContent = dato;
                     fila.appendChild(celda);
                 });
 
                 let celdaModificar = document.createElement("td");
-                celdaModificar.innerHTML = `<button class="btModificar" data-id="${e.id}">Modificar</button>`;
+                celdaModificar.innerHTML =
+                    `<button class="btModificar" data-id="${e.id}">Editar</button>`;
                 fila.appendChild(celdaModificar);
+
                 let celdaBorrar = document.createElement("td");
-                celdaBorrar.innerHTML = `<button class="btBorrar" data-id="${e.id}">Borrar</button>`;
+                celdaBorrar.innerHTML =
+                    `<button class="btBorrar" data-id="${e.id}">Borrar</button>`;
                 fila.appendChild(celdaBorrar);
 
                 tabla.appendChild(fila);
             });
+
+            let pie = document.querySelector("#filas_tabla")
+                .closest("table")
+                .querySelector("tfoot tr");
+
+            pie.cells[0].textContent = "TOTALES: " + sumaCantidades;
+
+            document.getElementById("Tiva").textContent =
+                "Suma IVA: " + sumaIVA.toFixed(2);
+
+            document.getElementById("Ttotal").textContent =
+                "Suma TOTAL: " + sumaTOTAL.toFixed(2);
+
             eventoBotones();
         }
 
@@ -151,27 +185,207 @@
             botonModificar.forEach(boton => {
                 boton.addEventListener("click", function () {
                     let id = this.dataset.id;
+                    console.log("Pulsado Modificar. ID:", id);
+
                     modificarDetalle(id);
                 });
             });
 
+
             botonBorrar.forEach(boton => {
                 boton.addEventListener("click", function () {
                     let id = this.dataset.id;
-                    console.log("Llega " + id);
+                    borrarDetalle(id);
                 });
             });
+
         }
 
         function modificarDetalle(id) {
-            let filas_tabla = document.getElementById("filas_tabla").querySelectorAll("tr");
-            filas_tabla.forEach(fila => {
-                let filaID = fila.cells[0].textContent;
+            console.log("Entro en modificarDetalle:", id);
+            let filasTabla = document.getElementById("filas_tabla");
+            let filas = filasTabla.querySelectorAll("tr");
+            let encontrada = false;
+
+            filas.forEach(fila => {
+                let filaID = fila.cells[0].textContent.trim();
+
                 if (filaID == id) {
+                    encontrada = true;
 
+                    let cantidad = fila.cells[1].textContent.trim();
+                    let concepto = fila.cells[2].textContent.trim();
+                    let precio = fila.cells[3].textContent.trim();
+                    let tipoIva = fila.cells[4].textContent.trim();
+
+                    document.getElementById("cantidad").value = cantidad;
+                    document.getElementById("concepto").value = concepto;
+                    document.getElementById("precio").value = precio;
+                    document.getElementById("tipo_iva").value = tipoIva;
+
+                    document.getElementById("legend").textContent =
+                        "Modificar detalle";
+
+                    document.getElementById("btAnade").dataset.idld = id;
+
+                    document.getElementById("btAnade").textContent =
+                        "Guardar cambios";
+
+                    console.log("Datos cargados:", {
+                        id: id,
+                        cantidad: cantidad,
+                        concepto: concepto,
+                        precio: precio,
+                        tipo_iva: tipoIva
+                    });
                 }
-
             });
+
+            if (!encontrada) {
+                console.log("No se ha encontrado el detalle con ID:", id);
+            }
+        }
+
+        function guardarDetalle() {
+            let boton = document.getElementById("btAnade");
+            let idDetalle = boton.dataset.idld;
+            let idFactura = document.getElementById("factura").value;
+
+            let datos = {
+                servicio: idDetalle && idDetalle != "-1"
+                    ? "modificarDetalle"
+                    : "anade",
+                idFactura: idFactura,
+                cantidad: document.getElementById("cantidad").value,
+                concepto: document.getElementById("concepto").value,
+                precio: document.getElementById("precio").value,
+                tipo_iva: document.getElementById("tipo_iva").value
+            };
+
+            // Si estamos modificando, enviamos también el ID del detalle
+            if (datos.servicio === "modificarDetalle") {
+                datos.id = idDetalle;
+            }
+
+            fetch(url, {
+                method: "POST",
+                body: JSON.stringify(datos)
+            })
+                .then(r => r.json())
+                .then(d => {
+                    pintarTabla(d);
+
+                    // Limpiar los campos del formulario
+                    document.getElementById("cantidad").value = "";
+                    document.getElementById("concepto").value = "";
+                    document.getElementById("precio").value = "";
+                    document.getElementById("tipo_iva").value = "";
+
+                    // Volver al modo de añadir una línea nueva
+                    boton.dataset.idld = "-1";
+                    boton.textContent = "Añadir línea de detalle";
+                    document.getElementById("legend").textContent = "Añadir detalle";
+                })
+                .catch(error => console.error("Error al guardar el detalle:", error));
+        }
+
+        function borrarDetalle(id) {
+            let idFactura = document.getElementById("factura").value;
+
+            if (!confirm("¿Seguro que quieres borrar este detalle?")) {
+                return;
+            }
+
+            let datos = {
+                servicio: "borra",
+                id: id,
+                idFactura: idFactura
+            };
+
+            fetch(url, {
+                method: "POST",
+                body: JSON.stringify(datos)
+            })
+                .then(r => r.json())
+                .then(d => {
+                    pintarTabla(d);
+
+                    // Limpiar el formulario después de borrar
+                    document.getElementById("cantidad").value = "";
+                    document.getElementById("concepto").value = "";
+                    document.getElementById("precio").value = "";
+                    document.getElementById("tipo_iva").value = "";
+
+                    // Volver al modo añadir
+                    document.getElementById("btAnade").dataset.idld = "-1";
+                    document.getElementById("btAnade").textContent =
+                        "Añadir línea de detalle";
+                    document.getElementById("legend").textContent =
+                        "Añadir detalle";
+                })
+                .catch(error => console.error("Error al borrar el detalle:", error));
+        }
+
+        function mostrarFormularioFactura() {
+            document.getElementById("formFactura").classList.add("ver");
+        }
+
+        function cancelarFactura() {
+            document.getElementById("formFactura").classList.remove("ver");
+
+            document.getElementById("numero_factura").value = "FE";
+            document.getElementById("fecha_factura").value = "";
+        }
+
+        function guardarFactura() {
+            let numero = document.getElementById("numero_factura").value.trim();
+            let fecha = document.getElementById("fecha_factura").value;
+
+            if (numero === "" || fecha === "") {
+                alert("Introduce el número y la fecha de la factura.");
+                return;
+            }
+
+            let datos = {
+                servicio: "anadeFactura",
+                numero: numero,
+                fecha: fecha
+            };
+
+            fetch(url, {
+                method: "POST",
+                body: JSON.stringify(datos)
+            })
+                .then(r => r.json())
+                .then(facturas => {
+                    let select = document.getElementById("factura");
+
+                    // Actualizar las opciones del desplegable
+                    select.innerHTML =
+                        '<option value="-1">Selecciona una factura para consultar su detalle</option>';
+
+                    facturas.forEach(factura => {
+                        let opcion = document.createElement("option");
+
+                        opcion.value = factura.id;
+                        opcion.textContent = factura.numero + " " + factura.fecha;
+
+                        select.appendChild(opcion);
+                    });
+
+                    // Seleccionar la factura que acabamos de crear
+                    let nuevaFactura = facturas.find(factura =>
+                        factura.numero == numero && factura.fecha == fecha
+                    );
+
+                    if (nuevaFactura) {
+                        select.value = nuevaFactura.id;
+                        pedirDetalle(nuevaFactura.id);
+                    }
+
+                    cancelarFactura();
+                })
+                .catch(error => console.error("Error al añadir la factura:", error));
         }
     </script>
 </head>
@@ -253,7 +467,7 @@
     <!-- Formulario de línea de detalle  -->
     <div>
         <fieldset>
-            <legend id="league">Añadir detalle</legend>
+            <legend id="legend">Añadir detalle</legend>
             <p>
                 <label for="cantidad">Cantidad: </label>
                 <input type="text" id="cantidad" size="3" value="5" />
