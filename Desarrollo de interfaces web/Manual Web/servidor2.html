@@ -1,11 +1,277 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seervidor 2</title>
+    <title>Eclipse Jetty en Ubuntu Linux</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background: #eff6ff;
+        }
+
+        header {
+            background: #1e3a8a;
+            color: white;
+            padding: 25px 5%;
+            text-align: center;
+        }
+
+        nav {
+            background: #172554;
+            padding: 12px 5%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+
+        main {
+            max-width: 950px;
+            margin: 25px auto;
+            padding: 0 18px;
+        }
+
+        section {
+            background: white;
+            padding: 22px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            scroll-margin-top: 65px;
+        }
+
+        h2 {
+            color: #1e40af;
+        }
+
+        a {
+            color: #1d4ed8;
+        }
+
+        pre {
+            background: #111827;
+            color: white;
+            padding: 14px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: Consolas, monospace;
+        }
+
+        .captura-img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 15px auto;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+        }
+    </style>
 </head>
+
 <body>
-    
+    <header>
+        <h1>Eclipse Jetty 12.1 en Ubuntu Linux</h1>
+        <p>Instalación y configuración para ejecutar una aplicación web Java.</p>
+    </header>
+
+    <nav>
+        <a href="index.html">Inicio</a>
+        <a href="#requisitos">Requisitos</a>
+        <a href="#descarga">Descarga</a>
+        <a href="#instalacion">Instalación y configuración</a>
+        <a href="#prueba">Prueba de funcionamiento</a>
+    </nav>
+
+    <main>
+        <section>
+            <h2>1. ¿Qué es Eclipse Jetty?</h2>
+            <p>
+                Eclipse Jetty es un servidor web y contenedor de aplicaciones Java que permite ejecutar
+                aplicaciones web mediante tecnologías como Servlets y JSP. Esta guía explica cómo instalarlo
+                en Ubuntu Linux y comprobar que puede ejecutar código Java.
+            </p>
+        </section>
+
+        <section id="requisitos">
+            <h2>2. Requisitos previos</h2>
+            <ul>
+                <li>Ubuntu Linux 24.04 LTS.</li>
+                <li>Conexión a Internet para descargar e instalar el software.</li>
+                <li>Java JDK 21. Jetty 12.1 requiere Java 17 o una versión posterior.</li>
+            </ul>
+
+            <h3>Instalar y comprobar Java</h3>
+            <ol>
+                <li>Abre una terminal de Ubuntu.</li>
+                <li>Actualiza la lista de paquetes e instala el JDK 21:</li>
+            </ol>
+            <pre><code>sudo apt update
+sudo apt install openjdk-21-jdk</code></pre>
+            <ol start="3">
+                <li>Comprueba que Java y el compilador están instalados:</li>
+            </ol>
+            <pre><code>java -version
+javac -version</code></pre>
+            <p>
+                Los dos comandos deben mostrar la versión instalada. Si Java ya está instalado, comprueba
+                que sea la versión 17 o posterior antes de continuar.
+            </p>
+            <p class="captura-img">Añade aquí la captura de la terminal mostrando la versión de Java.</p>
+        </section>
+
+        <section id="descarga">
+            <h2>3. Descargar Eclipse Jetty</h2>
+            <ol>
+                <li>Abre la <a href="https://jetty.org/download.html" target="_blank" rel="noopener">página oficial de
+                        descargas de Eclipse Jetty</a>.</li>
+                <li>Selecciona la versión estable 12.1 y descarga el archivo comprimido <code>.tgz</code>.</li>
+                <li>Guarda el archivo descargado en la carpeta Descargas de Ubuntu.</li>
+            </ol>
+            <p>
+                Jetty 12.1 es compatible con Java 17 o posterior y permite desplegar aplicaciones web
+                de Jakarta EE 11, entre otras versiones.
+            </p>
+            <p class="captura-img">Añade aquí la captura de la página oficial de descarga de Jetty.</p>
+        </section>
+
+        <section id="instalacion">
+            <h2>4. Instalar y configurar Jetty</h2>
+            <h3>Descomprimir los archivos</h3>
+            <ol>
+                <li>Abre una terminal y crea la carpeta donde se instalará Jetty:</li>
+            </ol>
+            <pre><code>sudo mkdir -p /opt</code></pre>
+            <ol start="2">
+                <li>Descomprime el archivo descargado. Si se ha guardado en Descargas con el nombre indicado, ejecuta:
+                </li>
+            </ol>
+            <pre><code>sudo tar -xzf ~/Descargas/jetty-home-12.1.14.tgz -C /opt</code></pre>
+            <p>
+                Se creará la carpeta <code>/opt/jetty-home-12.1.14</code>, que contiene los archivos del servidor.
+            </p>
+
+            <h3>Crear el directorio de configuración</h3>
+            <ol>
+                <li>Crea el directorio que almacenará la configuración y las aplicaciones desplegadas:</li>
+            </ol>
+            <pre><code>sudo mkdir -p /opt/jetty-base
+sudo chown -R "$USER":"$USER" /opt/jetty-base</code></pre>
+            <ol start="2">
+                <li>Define las variables de entorno para indicar dónde están instalados Jetty y su configuración:</li>
+            </ol>
+            <pre><code>echo 'export JETTY_HOME=/opt/jetty-home-12.1.14' >> ~/.bashrc
+echo 'export JETTY_BASE=/opt/jetty-base' >> ~/.bashrc
+source ~/.bashrc</code></pre>
+            <ol start="3">
+                <li>Accede al directorio de configuración y activa los módulos HTTP, despliegue de aplicaciones Jakarta
+                    EE 11 y JSP:</li>
+            </ol>
+            <pre><code>cd "$JETTY_BASE"
+java -jar "$JETTY_HOME/start.jar" --add-modules=http,ee11-deploy,ee11-jsp</code></pre>
+            <p>
+                Estos módulos habilitan el acceso HTTP, el despliegue de aplicaciones web y la ejecución de páginas JSP.
+            </p>
+
+            <h3>Iniciar el servidor</h3>
+            <ol>
+                <li>Desde la terminal, ejecuta:</li>
+            </ol>
+            <pre><code>java -jar "$JETTY_HOME/start.jar"</code></pre>
+            <p>Jetty se iniciará utilizando el puerto HTTP 8080. Mantén abierta la terminal mientras el servidor esté
+                funcionando.</p>
+            <p class="captura-img">Añade aquí la captura de la terminal mostrando que Jetty se ha iniciado
+                correctamente.</p>
+        </section>
+
+        <section id="prueba">
+            <h2>5. Ejecutar código Java mediante JSP</h2>
+            <ol>
+                <li>Con el servidor detenido o desde otra terminal, crea una carpeta para la aplicación dentro del
+                    directorio de aplicaciones:</li>
+            </ol>
+            <pre><code>mkdir -p "$JETTY_BASE/webapps/PruebaJava"</code></pre>
+            <ol start="2">
+                <li>Crea el archivo JSP:</li>
+            </ol>
+            <pre><code>nano "$JETTY_BASE/webapps/PruebaJava/index.jsp"</code></pre>
+            <ol start="3">
+                <li>Escribe el siguiente contenido y guarda el archivo:</li>
+            </ol>
+            <pre><code>&lt;%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Prueba Java&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;Jetty funciona correctamente&lt;/h1&gt;
+    &lt;%
+        String mensaje = "Java se está ejecutando en el servidor";
+    %&gt;
+    &lt;p&gt;&lt;%= mensaje %&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+            <p>
+                En Nano, guarda con <code>Ctrl + O</code>, pulsa <code>Enter</code> y sal con
+                <code>Ctrl + X</code>.
+            </p>
+            <ol start="4">
+                <li>Inicia Jetty desde una terminal:</li>
+            </ol>
+            <pre><code>cd "$JETTY_BASE"
+java -jar "$JETTY_HOME/start.jar"</code></pre>
+            <ol start="5">
+                <li>Abre el navegador y accede a la siguiente dirección:</li>
+            </ol>
+            <pre><code>http://localhost:8080/PruebaJava/</code></pre>
+            <p>
+                Debe aparecer el encabezado «Jetty funciona correctamente» y el mensaje generado mediante
+                código Java. Esto comprueba que Jetty está ejecutando una página JSP.
+            </p>
+            <p>
+                Para detener el servidor, vuelve a la terminal donde se está ejecutando y pulsa
+                <code>Ctrl + C</code>.
+            </p>
+            <p class="captura-img">Añade aquí la captura del resultado de la página JSP en el navegador.</p>
+        </section>
+
+        <section>
+            <h2>Fuentes oficiales</h2>
+            <ul>
+                <li><a href="https://jetty.org/download.html" target="_blank" rel="noopener">Descarga de Eclipse
+                        Jetty</a></li>
+                <li><a href="https://jetty.org/docs/jetty/12.1/index.html" target="_blank" rel="noopener">Documentación
+                        de Eclipse Jetty 12.1</a></li>
+                <li><a href="https://jetty.org/docs/jetty/12.1/operations-guide/begin/index.html" target="_blank"
+                        rel="noopener">Guía oficial de instalación y puesta en marcha</a></li>
+                <li><a href="https://adoptium.net/temurin/releases/" target="_blank" rel="noopener">Descarga de Java JDK
+                        (Eclipse Temurin)</a></li>
+            </ul>
+        </section>
+    </main>
 </body>
+
 </html>
