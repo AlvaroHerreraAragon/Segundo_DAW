@@ -31,10 +31,18 @@ public class App {
         
         Database.listarPeliculas();
         
-        Database.buscarPeliculas("Comedia", 110, 8);
+        //Database.buscarPeliculas("Comedia", 110, 8);
         
-        Database.buscarPeliculasTitulo("planeta");
+        //Database.buscarPeliculasTitulo("planeta");
         
-        Database.listarPeliculasGenero();
+        //Database.listarPeliculasGenero();
+        
+        //Database.actualizarValoracion(1, 12);
+        
+        //Database.actualizarDatosPelicula(2, -90, 8.1);
+        
+        //Database.eliminarPelicula(185);
+        
+        Database.eliminarPelicula2Parametros("Ciencia Ficcion", 7.5);
     }
 }

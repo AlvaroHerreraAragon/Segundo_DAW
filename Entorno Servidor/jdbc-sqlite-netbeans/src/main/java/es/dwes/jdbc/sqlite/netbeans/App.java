@@ -21,17 +21,35 @@ public class App {
         }
 
         Database.crearTabla();
+        
+        //Database.insertarProducto("Teclado", 29.99);
 
-        try {
+        /*try {
             int filas = Database.insertarProducto("PS5", 580);
             System.out.println("Filas insertadas: " + filas);
         } catch (SQLException | IllegalArgumentException e) {
             e.printStackTrace();
-        }
+        }*/
 
-        try {
+        /*try {
             Database.listarProductos();
         } catch (SQLException e) {
+            e.printStackTrace();
+        }*/
+        
+        /*try {
+            int filas = Database.actualizarProducto(10, 100);
+            System.out.println("Filas actualizadas: " + filas);
+            Database.listarProductos();
+        } catch (SQLException | IllegalArgumentException e) {
+            e.printStackTrace();
+        }*/
+        
+        try{
+            int filas = Database.borrarProducto(9);
+            Database.listarProductos();
+            System.out.println("Filas borradas: " + filas);
+        } catch (SQLException | IllegalArgumentException e) {
             e.printStackTrace();
         }
     }

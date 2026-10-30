@@ -69,4 +69,31 @@ public class Database {
             System.out.println("Total: " + total);
         }
     }
+
+    public static int actualizarProducto(int id, double precio)
+            throws SQLException {
+        if (id <= 0 || !Double.isFinite(precio) || precio < 0) {
+            throw new IllegalArgumentException("Id o precio no valido");
+        }
+        String sql = "UPDATE producto SET precio = ? WHERE id = ?";
+        try (Connection con = conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setDouble(1, precio);
+            ps.setInt(2, id);
+            return ps.executeUpdate();
+        }
+
+    }
+    
+    public static int borrarProducto(int id)
+            throws SQLException {
+        if (id <= 0) {
+            throw new IllegalArgumentException("El id debe ser positivo");
+        }
+        String sql = "DELETE from producto WHERE id = ?";
+        try (Connection con = conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate();
+        }
+
+    }
 }

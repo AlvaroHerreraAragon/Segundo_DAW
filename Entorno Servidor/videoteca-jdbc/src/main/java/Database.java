@@ -128,12 +128,12 @@ public class Database {
             }
         }
     }
-    
+
     public static void listarPeliculasGenero() throws SQLException {
         String sql = "SELECT genero, AVG(duracion) AS duracion_media"
                 + ", AVG(valoracion) AS valoracion_media, COUNT(*) as total_peliculas FROM pelicula"
                 + " GROUP BY genero ORDER BY valoracion_media DESC";
-        
+
         try (Connection con = conectar(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 System.out.println("Genero: " + rs.getString("genero"));
@@ -142,6 +142,64 @@ public class Database {
                 System.out.println("Total Peliculas: " + rs.getInt("total_peliculas"));
             }
         }
+    }
+
+    public static int actualizarValoracion(int id, double valoracion)
+            throws SQLException {
+        if (id <= 0 || valoracion < 0 || valoracion > 10) {
+            throw new IllegalArgumentException("Id o valoracion no validos");
+        }
+        String sql = "UPDATE pelicula SET valoracion = ? WHERE id = ?";
+        try (Connection con = conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setDouble(1, valoracion);
+            ps.setInt(2, id);
+            return ps.executeUpdate();
+        }
+
+    }
+
+    public static int actualizarDatosPelicula(int id, double duracion, double valoracion)
+            throws SQLException {
+        if (id <= 0 || duracion < 0 || valoracion < 0 || valoracion > 10) {
+            throw new IllegalArgumentException("Datos no validos");
+        }
+        String sql = "UPDATE pelicula SET duracion = ?, valoracion = ? WHERE id = ?";
+        try (Connection con = conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setDouble(1, duracion);
+            ps.setDouble(2, valoracion);
+            ps.setInt(3, id);
+            
+            System.out.println("ID: " + id + " Nueva Duracion: " + duracion + " Nueva Valoracion: " + valoracion);
+
+            return ps.executeUpdate();
+        }
+    }
+    
+    public static int eliminarPelicula(int id)
+            throws SQLException {
+        if (id <= 0) {
+            throw new IllegalArgumentException("El id debe ser positivo");
+        }
+        String sql = "DELETE from pelicula WHERE id = ?";
+        try (Connection con = conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setInt(1, id);
+            return ps.executeUpdate();
+        }
+
+    }
+    
+    public static int eliminarPelicula2Parametros(String genero, double valoracion)
+            throws SQLException {
+        if (genero.isEmpty() || valoracion < 0 || valoracion > 10) {
+            throw new IllegalArgumentException("Genero o valoracion incorrectos");
+        }
+        String sql = "DELETE from pelicula WHERE genero = ? AND valoracion < ?";
+        try (Connection con = conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, genero);
+            ps.setDouble(2, valoracion);
+            return ps.executeUpdate();
+        }
+
     }
 
 }
