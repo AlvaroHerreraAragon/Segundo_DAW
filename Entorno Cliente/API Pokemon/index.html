@@ -305,29 +305,36 @@
                     actualizarPaginacion();
 
                     // Obtenemos los datos completos de los Pokémon
-                    obtenerPokemons(datos.results, 0);
+                    obtenerPokemons(datos.results);
                 });
         }
 
         // Funcion para obtener los detalles de cada pokemon
-        function obtenerPokemons(resultados, indice) {
+        function obtenerPokemons(resultados) {
 
-            // Comprobamos si todavía quedan Pokémon por obtener
-            if (indice < resultados.length) {
+            let pokemons = [];
+            let cargados = 0;
 
-                // Hacemos una petición para obtener los datos del Pokémon
-                fetch(resultados[indice].url)
+            resultados.forEach((pokemon, indice) => {
+                fetch(pokemon.url)
                     .then(respuesta => respuesta.json())
-                    .then(pokemon => {
+                    .then(datos => {
 
-                        // Creamos la fila del Pokémon y la añadimos a la tabla
-                        const fila = crearFila(pokemon);
-                        tabla.appendChild(fila);
+                        // Guardamos el Pokémon en su posición correspondiente
+                        pokemons[indice] = datos;
+                        cargados++;
 
-                        // Pasamos al siguiente Pokémon
-                        obtenerPokemons(resultados, indice + 1);
+                        // Comprobamos si ya se han cargado todos
+                        if (cargados === resultados.length) {
+
+                            // Recorremos el array y añadimos los Pokémon a la tabla
+                            pokemons.forEach(pokemon => {
+                                const fila = crearFila(pokemon);
+                                tabla.appendChild(fila);
+                            });
+                        }
                     });
-            }
+            });
         }
 
         // Crear una fila de la tabla para un Pokémon
