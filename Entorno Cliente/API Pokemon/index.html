@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokédex - API Pokémon</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+            color: #333;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 15px;
+        }
+
+        .contenedor {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            color: #e3350d;
+            margin-bottom: 20px;
+        }
+
+        #estado {
+            margin-bottom: 15px;
+            color: #666;
+        }
+
+        .tabla-contenedor {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        thead {
+            background-color: #e3350d;
+            color: white;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tbody tr:hover {
+            background-color: #fce8e5;
+        }
+
+        td img {
+            width: 65px;
+            height: 65px;
+            object-fit: contain;
+        }
+
+        .nombre-pokemon {
+            color: #d32f2f;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .nombre-pokemon:hover {
+            text-decoration: underline;
+        }
+
+        .tipo {
+            display: inline-block;
+            background-color: #e0e0e0;
+            padding: 5px 10px;
+            border-radius: 15px;
+            margin: 2px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .paginacion {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 25px;
+        }
+
+        button {
+            background-color: #e3350d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        button:hover:not(:disabled) {
+            background-color: #b52b0b;
+        }
+
+        button:disabled {
+            background-color: #aaa;
+            cursor: not-allowed;
+        }
+
+        .detalle {
+            text-align: center;
+        }
+
+        .detalle img {
+            width: 180px;
+            height: 180px;
+            object-fit: contain;
+        }
+
+        .detalle h3 {
+            font-size: 26px;
+            margin: 10px 0;
+            text-transform: capitalize;
+        }
+
+        .info-detalle {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .info-detalle div {
+            background-color: #f2f2f2;
+            padding: 15px;
+            border-radius: 8px;
+            min-width: 120px;
+        }
+
+        .info-detalle strong {
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .estadisticas {
+            max-width: 500px;
+            margin: 20px auto;
+            text-align: left;
+        }
+
+        .estadisticas p {
+            padding: 6px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .oculto {
+            display: none;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <main>
+
+        <section class="contenedor">
+
+            <h2>Listado de Pokémon</h2>
+
+            <div class="tabla-contenedor">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>N.º</th>
+                            <th>Imagen</th>
+                            <th>Nombre</th>
+                            <th>Tipo</th>
+                            <th>Experiencia base</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="filas_tabla">
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <div class="paginacion">
+
+                <button id="anterior" disabled>Anterior</button>
+
+                <span id="pagina">Página 1</span>
+
+                <button id="siguiente" disabled>Siguiente</button>
+
+            </div>
+
+        </section>
+
+        <section id="detalle" class="contenedor detalle oculto">
+
+            <h2>Detalle del Pokémon</h2>
+
+            <div id="contenido_detalle">
+            </div>
+
+            <button id="cerrarDetalle">Cerrar detalle</button>
+
+        </section>
+
+    </main>
+
+
+    <script>
+        // Variables con la url de la API y con el limite de pokemons que saldran por pagina
+        const URL_API = "https://pokeapi.co/api/v2/pokemon/";
+        const LIMITE = 10;
+
+        // Variables para controlar la paginación
+        let urlSiguiente = null;
+        let urlAnterior = null;
+        let paginaActual = 1;
+
+        // Variables que cogen los elementos del HTML
+        const tabla = document.getElementById("filas_tabla");
+        const botonAnterior = document.getElementById("anterior");
+        const botonSiguiente = document.getElementById("siguiente");
+        const textoPagina = document.getElementById("pagina");
+
+        const detalle = document.getElementById("detalle");
+        const contenidoDetalle = document.getElementById("contenido_detalle");
+        const botonCerrarDetalle = document.getElementById("cerrarDetalle");
+
+        // Variables que traducen los tipos de pokemon al español
+        const tipos = {
+            normal: "Normal",
+            fire: "Fuego",
+            water: "Agua",
+            electric: "Eléctrico",
+            grass: "Planta",
+            ice: "Hielo",
+            fighting: "Lucha",
+            poison: "Veneno",
+            ground: "Tierra",
+            flying: "Volador",
+            psychic: "Psíquico",
+            bug: "Bicho",
+            rock: "Roca",
+            ghost: "Fantasma",
+            dragon: "Dragón",
+            dark: "Siniestro",
+            steel: "Acero",
+            fairy: "Hada"
+        };
+
+        // Iniciamos los eventos y mostramos el primer listado
+        window.onload = function () {
+            inicializarEventos();
+            cargarListado(URL_API + "?limit=" + LIMITE + "&offset=0");
+        };
+
+        // Declaramos los eventos de los botones siguiente, anterior y cerrar detalle
+        function inicializarEventos() {
+            botonSiguiente.addEventListener("click", siguientePagina);
+            botonAnterior.addEventListener("click", anteriorPagina);
+            botonCerrarDetalle.addEventListener("click", cerrarDetalle);
+        }
+
+        // Obtener el listado de Pokémon de la API
+        function cargarListado(url) {
+
+            // Vaciamos la tabla antes de mostrar los nuevos Pokémon
+            tabla.innerHTML = "";
+
+            // Hacemos la petición a la API para obtener el listado
+            fetch(url)
+                .then(respuesta => respuesta.json())
+                .then(datos => {
+
+                    // Guardamos las URL para poder pasar a la página siguiente o anterior
+                    urlSiguiente = datos.next;
+                    urlAnterior = datos.previous;
+
+                    // Actualizamos los botones y el número de página
+                    actualizarPaginacion();
+
+                    // Obtenemos los datos completos de los Pokémon
+                    obtenerPokemons(datos.results, 0);
+                });
+        }
+
+        // Funcion para obtener los detalles de cada pokemon
+        function obtenerPokemons(resultados, indice) {
+
+            // Comprobamos si todavía quedan Pokémon por obtener
+            if (indice < resultados.length) {
+
+                // Hacemos una petición para obtener los datos del Pokémon
+                fetch(resultados[indice].url)
+                    .then(respuesta => respuesta.json())
+                    .then(pokemon => {
+
+                        // Creamos la fila del Pokémon y la añadimos a la tabla
+                        const fila = crearFila(pokemon);
+                        tabla.appendChild(fila);
+
+                        // Pasamos al siguiente Pokémon
+                        obtenerPokemons(resultados, indice + 1);
+                    });
+            }
+        }
+
+        // Crear una fila de la tabla para un Pokémon
+        function crearFila(pokemon) {
+            const fila = document.createElement("tr");
+
+            // Número del Pokémon
+            const numero = document.createElement("td");
+            numero.textContent = pokemon.id;
+
+            // Imagen del Pokémon
+            const imagen = document.createElement("td");
+            const img = document.createElement("img");
+            img.src = pokemon.sprites.front_default || "";
+            img.alt = pokemon.name;
+            imagen.appendChild(img);
+
+            // Nombre del Pokémon
+            const nombre = document.createElement("td");
+            const enlace = document.createElement("a");
+            enlace.textContent = pokemon.name;
+            enlace.href = "#detalle";
+            enlace.classList.add("nombre-pokemon");
+
+            // Al pulsar sobre el nombre, mostramos el detalle de ese Pokémon
+            enlace.addEventListener("click", function () {
+                cargarDetalle(pokemon.id);
+            });
+
+            nombre.appendChild(enlace);
+
+            // Tipos del Pokémon
+            const tipo = document.createElement("td");
+
+            // Recorremos los tipos y los mostramos en la tabla
+            pokemon.types.forEach(t => {
+                const etiqueta = document.createElement("span");
+                etiqueta.classList.add("tipo");
+                etiqueta.textContent = traducirTipos(t.type.name);
+                tipo.appendChild(etiqueta);
+            });
+
+            // Experiencia base
+            const experiencia = document.createElement("td");
+
+            // Si no tiene experiencia disponible, mostramos un texto en su lugar
+            experiencia.textContent =
+                pokemon.base_experience !== null
+                    ? pokemon.base_experience
+                    : "No disponible";
+
+            // Añadir todas las celdas a la fila
+            fila.appendChild(numero);
+            fila.appendChild(imagen);
+            fila.appendChild(nombre);
+            fila.appendChild(tipo);
+            fila.appendChild(experiencia);
+
+            return fila;
+        }
+
+        // Traducir el tipo de un Pokémon al español
+        function traducirTipos(tipo) {
+            return tipos[tipo] || tipo;
+        }
+
+        // Actualizar los botones y el número de página
+        function actualizarPaginacion() {
+
+            // Desactivamos los botones cuando no hay más páginas disponibles
+            botonAnterior.disabled = (urlAnterior === null);
+            botonSiguiente.disabled = (urlSiguiente === null);
+
+            // Mostramos el número de página actual
+            textoPagina.textContent = "Página " + paginaActual;
+        }
+
+        // Cargar la siguiente página
+        function siguientePagina() {
+
+            // Comprobamos que exista una página siguiente
+            if (urlSiguiente !== null) {
+                paginaActual++;
+                cargarListado(urlSiguiente);
+            }
+        }
+
+        // Cargar la página anterior
+        function anteriorPagina() {
+
+            // Comprobamos que exista una página anterior
+            if (urlAnterior !== null) {
+                paginaActual--;
+                cargarListado(urlAnterior);
+            }
+        }
+
+        // Obtener el detalle de un Pokémon concreto
+        function cargarDetalle(id) {
+
+            // Mostramos el apartado del detalle y lo vaciamos
+            detalle.classList.remove("oculto");
+            contenidoDetalle.innerHTML = "";
+
+            // Hacemos una petición para obtener los datos del Pokémon seleccionado
+            fetch(URL_API + id)
+                .then(respuesta => respuesta.json())
+                .then(pokemon => {
+
+                    // Mostramos toda la información del Pokémon
+                    pintarDetalle(pokemon);
+                });
+        }
+
+        // Pintar toda la información del Pokémon seleccionado
+        function pintarDetalle(pokemon) {
+
+            // Vaciamos el contenido anterior
+            contenidoDetalle.innerHTML = "";
+
+            // Imagen del Pokémon
+            const imagen = document.createElement("img");
+
+            // Mostramos la imagen principal y, si no está disponible, usamos la otra
+            imagen.src =
+                pokemon.sprites.other["official-artwork"].front_default ||
+                pokemon.sprites.front_default;
+
+            imagen.alt = pokemon.name;
+
+            // Nombre del Pokémon
+            const nombre = document.createElement("h3");
+            nombre.textContent = pokemon.name;
+
+            // Información básica del Pokémon
+            const informacion = crearInformacion(pokemon);
+
+            // Tipos del Pokémon
+            const tipo = document.createElement("p");
+            const tituloTipo = document.createElement("strong");
+            tituloTipo.textContent = "Tipo: ";
+            tipo.appendChild(tituloTipo);
+
+            // Recorremos los tipos para mostrarlos en el detalle
+            pokemon.types.forEach(t => {
+                const etiqueta = document.createElement("span");
+                etiqueta.classList.add("tipo");
+                etiqueta.textContent = traducirTipos(t.type.name);
+                tipo.appendChild(etiqueta);
+            });
+
+            // Título de las estadísticas
+            const tituloEstadisticas = document.createElement("h3");
+            tituloEstadisticas.textContent = "Estadísticas";
+
+            // Estadísticas del Pokémon
+            const estadisticas = crearEstadisticas(pokemon.stats);
+
+            // Añadimos todos los elementos al apartado de detalle
+            contenidoDetalle.appendChild(imagen);
+            contenidoDetalle.appendChild(nombre);
+            contenidoDetalle.appendChild(informacion);
+            contenidoDetalle.appendChild(tipo);
+            contenidoDetalle.appendChild(tituloEstadisticas);
+            contenidoDetalle.appendChild(estadisticas);
+        }
+
+        // Crear los elementos con la información básica del Pokémon
+        function crearInformacion(pokemon) {
+            const informacion = document.createElement("div");
+            informacion.classList.add("info-detalle");
+
+            // Mostramos el número, la altura, el peso y la experiencia
+            informacion.appendChild(
+                crearDato("Número", pokemon.id)
+            );
+
+            informacion.appendChild(
+                crearDato("Altura", (pokemon.height / 10) + " m")
+            );
+
+            informacion.appendChild(
+                crearDato("Peso", (pokemon.weight / 10) + " kg")
+            );
+
+            informacion.appendChild(
+                crearDato(
+                    "Experiencia",
+                    pokemon.base_experience !== null
+                        ? pokemon.base_experience
+                        : "No disponible"
+                )
+            );
+
+            return informacion;
+        }
+
+        // Crear un elemento individual de información
+        function crearDato(titulo, valor) {
+            const contenedor = document.createElement("div");
+
+            // Creamos el título y el valor que se van a mostrar
+            const strong = document.createElement("strong");
+            strong.textContent = titulo;
+
+            const texto = document.createElement("span");
+            texto.textContent = valor;
+
+            // Añadimos el título y el valor al contenedor
+            contenedor.appendChild(strong);
+            contenedor.appendChild(texto);
+
+            return contenedor;
+        }
+
+        // Crear el listado de estadísticas del Pokémon
+        function crearEstadisticas(estadisticas) {
+            const estadisticasElement = document.createElement("div");
+            estadisticasElement.classList.add("estadisticas");
+
+            // Recorremos las estadísticas y mostramos su nombre y valor
+            estadisticas.forEach(stat => {
+                const p = document.createElement("p");
+                p.textContent =
+                    stat.stat.name + ": " + stat.base_stat;
+
+                estadisticasElement.appendChild(p);
+            });
+
+            return estadisticasElement;
+        }
+
+        // Cerrar el apartado de detalle
+        function cerrarDetalle() {
+
+            // Ocultamos el apartado de detalle
+            detalle.classList.add("oculto");
+        }
+
+    </script>
+
+</body>
+
+</html>
