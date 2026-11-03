@@ -59,334 +59,449 @@
     </style>
 
     <script type="text/javascript">
+        // Dirección del archivo PHP al que se enviarán las peticiones
+        var url = "servidor.php";
 
-        let url = "servidor.php";
-        window.onload = () => {
-            console.log("Hola, he pedido la lista");
-            pedirFacturas();
-            //Añadir el evento onchange al select
-            document.getElementById("factura").onchange = pedirDetalle;
-            document.getElementById("btAnade").onclick = guardarDetalle;
-            document.getElementById("btMuestraFactura").onclick = mostrarFormularioFactura;
-            document.getElementById("btAnadeFactura").onclick = guardarFactura;
-            document.getElementById("btCancelarFactura").onclick = cancelarFactura;
-        }
+        // Crea una fila de la tabla a partir de los datos recibidos
+        function Crea_Fila(aCol) {
 
-        const pedirFacturas = () => {
-            let param = {
-                method: "POST",
-                body: JSON.stringify({ servicio: "facturas" })
-            }
+            // Creamos una fila HTML
+            var fila = document.createElement("tr");
+            var col; var cont;
 
-            fetch(url, param)
-                .then(r => r.json())
-                .then(d => {
-                    console.log("d: ", d);
-                    llenaSelect(d);
-                });
+            // Recorremos todos los valores del objeto recibido
+            Object.values(aCol).forEach(function (valor) {
 
-            const llenaSelect = (datos) => {
-                //Aqui llamamos al select
-                let sel = document.getElementById("factura");
-                let op;
-                datos.forEach(e => {
-                    console.log("elemento e: ", e);
-                    op = document.createElement("option");
-                    op.value = e.id;
-                    op.innerHTML = e.numero + " " + e.fecha;
-                    sel.appendChild(op);
-                });
-            }
-        }
+                // Creamos una celda por cada valor
+                col = document.createElement("td");
 
-        function pedirDetalle() {
-            let p = {
-                servicio: "detalle",
-                idFactura: this.value
-            };
+                // Introducimos el valor dentro de la celda
+                cont = document.createTextNode(valor);
+                col.appendChild(cont);
 
-            let param = {
-                method: "POST",
-                body: JSON.stringify(p)
-            };
-
-            fetch(url, param)
-                .then(r => r.json())
-                .then(d => {
-                    console.log("ID Facturas:", p.idFactura);
-                    console.log("Detalles recibidos:", d);
-
-                    pintarTabla(d);
-                });
-        }
-
-        function pintarTabla(datos) {
-            let tabla = document.getElementById("filas_tabla");
-            let sumaCantidades = 0;
-            let sumaIVA = 0;
-            let sumaTOTAL = 0;
-
-            tabla.innerHTML = "";
-
-            datos.forEach(e => {
-                let fila = document.createElement("tr");
-
-                let cantidad = parseFloat(e.cantidad);
-                let precio = parseFloat(e.precio);
-                let tipoIVA = parseFloat(e.tipo_iva);
-
-                let base = cantidad * precio;
-                let iva = base * (tipoIVA / 100);
-                let total = base + iva;
-
-                sumaCantidades += cantidad;
-                sumaIVA += iva;
-                sumaTOTAL += total;
-
-                [e.id, cantidad, e.concepto, precio, tipoIVA,
-                iva.toFixed(2), total.toFixed(2)].forEach(dato => {
-                    let celda = document.createElement("td");
-                    celda.textContent = dato;
-                    fila.appendChild(celda);
-                });
-
-                let celdaModificar = document.createElement("td");
-                celdaModificar.innerHTML =
-                    `<button class="btModificar" data-id="${e.id}">Editar</button>`;
-                fila.appendChild(celdaModificar);
-
-                let celdaBorrar = document.createElement("td");
-                celdaBorrar.innerHTML =
-                    `<button class="btBorrar" data-id="${e.id}">Borrar</button>`;
-                fila.appendChild(celdaBorrar);
-
-                tabla.appendChild(fila);
+                // Añadimos la celda a la fila
+                fila.appendChild(col);
             });
 
-            let pie = document.querySelector("#filas_tabla")
-                .closest("table")
-                .querySelector("tfoot tr");
-
-            pie.cells[0].textContent = "TOTALES: " + sumaCantidades;
-
-            document.getElementById("Tiva").textContent =
-                "Suma IVA: " + sumaIVA.toFixed(2);
-
-            document.getElementById("Ttotal").textContent =
-                "Suma TOTAL: " + sumaTOTAL.toFixed(2);
-
-            eventoBotones();
+            // Devolvemos la fila creada
+            return fila;
         }
 
-        function eventoBotones() {
-            let botonModificar = document.querySelectorAll(".btModificar");
-            let botonBorrar = document.querySelectorAll(".btBorrar");
+        // Rellena la tabla con los datos recibidos y añade los botones de modificar y borrar
+        function LlenaTabla(aTabla, cuerpoTabla) {
+            var fila, td, boton;
 
-            botonModificar.forEach(boton => {
-                boton.addEventListener("click", function () {
-                    let id = this.dataset.id;
-                    console.log("Pulsado Modificar. ID:", id);
+            // Limpiamos el contenido actual de la tabla
+            cuerpoTabla.innerHTML = "";
 
-                    modificarDetalle(id);
-                });
+            // Recorremos todos los detalles recibidos
+            aTabla.forEach(function (d) {
+
+                // Creamos una fila con los datos del detalle
+                fila = Crea_Fila(d);
+
+                // Boton MODIFICAR
+                td = document.createElement("td");
+                boton = document.createElement("button");
+                boton.innerHTML = "Modificar";
+
+                // Guardamos el ID del detalle en el botón
+                boton.dataset.idid = d.id;
+
+                // Asignamos la función que se ejecutará al pulsar el botón
+                boton.onclick = editarDetalle;
+
+                // Añadimos el botón a la fila
+                td.appendChild(boton);
+                fila.appendChild(td);
+
+                // Boton BORRAR
+                td = document.createElement("td");
+                boton = document.createElement("button");
+                boton.innerHTML = "Borrar";
+
+                // Guardamos el ID del detalle en el botón
+                boton.dataset.idid = d.id;
+
+                // Asignamos la función que se ejecutará al pulsar el botón
+                boton.onclick = borrarDetalle;
+
+                // Añadimos el botón a la fila
+                td.appendChild(boton);
+                fila.appendChild(td);
+
+                // Añadimos la fila completa al cuerpo de la tabla
+                cuerpoTabla.appendChild(fila);
             });
-
-
-            botonBorrar.forEach(boton => {
-                boton.addEventListener("click", function () {
-                    let id = this.dataset.id;
-                    borrarDetalle(id);
-                });
-            });
-
         }
 
-        function modificarDetalle(id) {
-            console.log("Entro en modificarDetalle:", id);
-            let filasTabla = document.getElementById("filas_tabla");
-            let filas = filasTabla.querySelectorAll("tr");
-            let encontrada = false;
+        // Recibe los detalles de una factura, calcula sus importes y los muestra en la tabla
+        function PintaDetalle(datos) {
+            console.log("datos de detalle", datos);
 
-            filas.forEach(fila => {
-                let filaID = fila.cells[0].textContent.trim();
+            // Limpiamos las filas de la tabla
+            document.getElementById("filas_tabla").innerHTML = "";
 
-                if (filaID == id) {
-                    encontrada = true;
+            // Limpiamos los totales anteriores
+            document.querySelector("#Tiva").innerHTML = "";
+            document.querySelector("#Ttotal").innerHTML = "";
 
-                    let cantidad = fila.cells[1].textContent.trim();
-                    let concepto = fila.cells[2].textContent.trim();
-                    let precio = fila.cells[3].textContent.trim();
-                    let tipoIva = fila.cells[4].textContent.trim();
+            // Si no hay detalles, terminamos la función
+            if (datos.length == 0) return;
 
-                    document.getElementById("cantidad").value = cantidad;
-                    document.getElementById("concepto").value = concepto;
-                    document.getElementById("precio").value = precio;
-                    document.getElementById("tipo_iva").value = tipoIva;
+            // Recorremos el array para calcular el IVA y el total de cada detalle
+            datos = datos.map(function (d) {
+                let importe = d.cantidad * d.precio;
+                let iva = importe * d.tipo_iva / 100;
 
-                    document.getElementById("legend").textContent =
-                        "Modificar detalle";
-
-                    document.getElementById("btAnade").dataset.idld = id;
-
-                    document.getElementById("btAnade").textContent =
-                        "Guardar cambios";
-
-                    console.log("Datos cargados:", {
-                        id: id,
-                        cantidad: cantidad,
-                        concepto: concepto,
-                        precio: precio,
-                        tipo_iva: tipoIva
-                    });
+                // Devolvemos un objeto con los datos originales y los nuevos cálculos
+                return {
+                    id: d.id,
+                    cantidad: d.cantidad,
+                    concepto: d.concepto,
+                    precio: d.precio,
+                    tipo_iva: d.tipo_iva,
+                    iva: iva.toFixed(2),
+                    total: (importe + iva).toFixed(2)
                 }
             });
 
-            if (!encontrada) {
-                console.log("No se ha encontrado el detalle con ID:", id);
+            console.log(datos);
+
+            // Mostramos los detalles calculados en la tabla
+            LlenaTabla(datos, document.getElementById("filas_tabla"));
+
+            // Creamos y mostramos los totales de la factura
+
+            // Si hay más de un detalle, sumamos los importes de todos ellos
+            if (datos.length > 1) {
+                var acumulado = datos.reduce(function (total, d) {
+                    return {
+                        // Sumamos el IVA de cada detalle
+                        iva: parseFloat(total.iva) + parseFloat(d.iva),
+
+                        // Sumamos el total de cada detalle
+                        total: parseFloat(total.total) + parseFloat(d.total)
+                    };
+                });
+
+                // Mostramos los totales acumulados con dos decimales
+                document.querySelector("#Tiva").innerHTML = acumulado.iva.toFixed(2);
+                document.querySelector("#Ttotal").innerHTML = acumulado.total.toFixed(2);
+
+            } else {
+
+                // Si solo hay un detalle, mostramos directamente sus importes
+                document.querySelector("#Tiva").innerHTML = datos[0].iva;
+                document.querySelector("#Ttotal").innerHTML = datos[0].total;
             }
+
+            // Limpiamos el formulario después de mostrar los detalles
+            Cancelar();
         }
 
-        function guardarDetalle() {
-            let boton = document.getElementById("btAnade");
-            let idDetalle = boton.dataset.idld;
-            let idFactura = document.getElementById("factura").value;
+        // Solicita al servidor todas las facturas existentes
+        function pedirFacturas() {
 
-            let datos = {
-                servicio: idDetalle && idDetalle != "-1"
-                    ? "modificarDetalle"
-                    : "anade",
-                idFactura: idFactura,
-                cantidad: document.getElementById("cantidad").value,
-                concepto: document.getElementById("concepto").value,
-                precio: document.getElementById("precio").value,
-                tipo_iva: document.getElementById("tipo_iva").value
-            };
-
-            // Si estamos modificando, enviamos también el ID del detalle
-            if (datos.servicio === "modificarDetalle") {
-                datos.id = idDetalle;
+            // Creamos el objeto con el servicio que queremos ejecutar
+            var p = {
+                servicio: "facturas",
             }
 
-            fetch(url, {
+            // Preparamos los parámetros de la petición
+            var parametros = {
                 method: "POST",
-                body: JSON.stringify(datos)
-            })
+                body: JSON.stringify(p)
+            }
+
+            // Enviamos la petición al servidor
+            fetch(url, parametros)
+                // Convertimos la respuesta del servidor a JSON
                 .then(r => r.json())
-                .then(d => {
-                    pintarTabla(d);
 
-                    // Limpiar los campos del formulario
-                    document.getElementById("cantidad").value = "";
-                    document.getElementById("concepto").value = "";
-                    document.getElementById("precio").value = "";
-                    document.getElementById("tipo_iva").value = "";
+                // Enviamos los datos recibidos a la función que rellena el desplegable
+                .then(datos => listadoFacturas(datos))
 
-                    // Volver al modo de añadir una línea nueva
-                    boton.dataset.idld = "-1";
-                    boton.textContent = "Añadir línea de detalle";
-                    document.getElementById("legend").textContent = "Añadir detalle";
-                })
-                .catch(error => console.error("Error al guardar el detalle:", error));
+                // Mostramos el error si ocurre algún problema
+                .catch(e => console.error('error al pedir los datos ', e));
         }
 
-        function borrarDetalle(id) {
-            let idFactura = document.getElementById("factura").value;
+        // Recibe las facturas del servidor y las muestra en el desplegable
+        function listadoFacturas(datos) {
+            var select = document.getElementById("factura");
 
-            if (!confirm("¿Seguro que quieres borrar este detalle?")) {
+            // Limpiamos las opciones anteriores
+            select.innerHTML = "";
+
+            // Añadimos la opción inicial
+            var opcion = document.createElement("option");
+            opcion.value = "-1";
+            opcion.innerHTML = "Selecciona una factura para consultar su detalle";
+            select.appendChild(opcion);
+
+            // Recorremos todas las facturas recibidas
+            datos.forEach(function (f) {
+                opcion = document.createElement("option");
+
+                // Guardamos el ID como valor de la opción
+                opcion.value = f.id;
+
+                // Mostramos el número y la fecha de la factura
+                opcion.innerHTML = f.numero + " - " + f.fecha;
+
+                // Añadimos la opción al desplegable
+                select.appendChild(opcion);
+            });
+        }
+
+        // Solicita al servidor los detalles de la factura seleccionada
+        function PedirDetalle() {
+
+            // Creamos el objeto con el servicio y el ID de la factura seleccionada
+            var p = {
+                servicio: "detalle",
+                idFactura: document.querySelector("#factura").value
+            }
+
+            // Preparamos los parámetros de la petición
+            var parametros = {
+                method: "POST",
+                body: JSON.stringify(p)
+            }
+
+            // Enviamos la petición al servidor
+            fetch(url, parametros)
+                // Convertimos la respuesta a JSON
+                .then(r => r.json())
+
+                // Enviamos los detalles recibidos para mostrarlos en la tabla
+                .then(datos => PintaDetalle(datos))
+
+                // Mostramos el error si ocurre algún problema
+                .catch(e => console.error('error al pedir los datos ', e));
+        }
+
+        // Muestra el formulario para añadir una factura
+        function muestraFormFactura() {
+            document.querySelector("#formFactura").classList.add("ver");
+        }
+
+        // Oculta el formulario de factura
+        function ocultaFormFactura() {
+            document.querySelector("#formFactura").classList.remove("ver");
+        }
+
+        // Recoge los datos del formulario y añade una factura nueva
+        function anadeFactura() {
+
+            // Recogemos el número y la fecha introducidos
+            var numero = document.querySelector("#numero_factura").value;
+            var fecha = document.querySelector("#fecha_factura").value;
+
+            // Comprobamos que los campos no estén vacíos
+            if (numero == "" || fecha == "") {
+                alert("Debes rellenar todos los campos");
                 return;
             }
 
-            let datos = {
-                servicio: "borra",
-                id: id,
-                idFactura: idFactura
-            };
-
-            fetch(url, {
-                method: "POST",
-                body: JSON.stringify(datos)
-            })
-                .then(r => r.json())
-                .then(d => {
-                    pintarTabla(d);
-
-                    // Limpiar el formulario después de borrar
-                    document.getElementById("cantidad").value = "";
-                    document.getElementById("concepto").value = "";
-                    document.getElementById("precio").value = "";
-                    document.getElementById("tipo_iva").value = "";
-
-                    // Volver al modo añadir
-                    document.getElementById("btAnade").dataset.idld = "-1";
-                    document.getElementById("btAnade").textContent =
-                        "Añadir línea de detalle";
-                    document.getElementById("legend").textContent =
-                        "Añadir detalle";
-                })
-                .catch(error => console.error("Error al borrar el detalle:", error));
-        }
-
-        function mostrarFormularioFactura() {
-            document.getElementById("formFactura").classList.add("ver");
-        }
-
-        function cancelarFactura() {
-            document.getElementById("formFactura").classList.remove("ver");
-
-            document.getElementById("numero_factura").value = "FE";
-            document.getElementById("fecha_factura").value = "";
-        }
-
-        function guardarFactura() {
-            let numero = document.getElementById("numero_factura").value.trim();
-            let fecha = document.getElementById("fecha_factura").value;
-
-            if (numero === "" || fecha === "") {
-                alert("Introduce el número y la fecha de la factura.");
-                return;
-            }
-
-            let datos = {
+            // Creamos el objeto con los datos de la nueva factura
+            var p = {
                 servicio: "anadeFactura",
                 numero: numero,
                 fecha: fecha
             };
 
-            fetch(url, {
+            // Preparamos los parámetros de la petición
+            var parametros = {
                 method: "POST",
-                body: JSON.stringify(datos)
-            })
+                body: JSON.stringify(p)
+            };
+
+            // Enviamos los datos al servidor para añadir la factura
+            fetch(url, parametros)
                 .then(r => r.json())
-                .then(facturas => {
-                    let select = document.getElementById("factura");
+                .then(datos => {
 
-                    // Actualizar las opciones del desplegable
-                    select.innerHTML =
-                        '<option value="-1">Selecciona una factura para consultar su detalle</option>';
+                    // Actualizamos el desplegable con las facturas recibidas
+                    listadoFacturas(datos);
 
-                    facturas.forEach(factura => {
-                        let opcion = document.createElement("option");
+                    // Ocultamos el formulario
+                    ocultaFormFactura();
 
-                        opcion.value = factura.id;
-                        opcion.textContent = factura.numero + " " + factura.fecha;
-
-                        select.appendChild(opcion);
-                    });
-
-                    // Seleccionar la factura que acabamos de crear
-                    let nuevaFactura = facturas.find(factura =>
-                        factura.numero == numero && factura.fecha == fecha
-                    );
-
-                    if (nuevaFactura) {
-                        select.value = nuevaFactura.id;
-                        pedirDetalle(nuevaFactura.id);
-                    }
-
-                    cancelarFactura();
+                    // Dejamos los campos preparados para introducir otra factura
+                    document.querySelector("#numero_factura").value = "FE";
+                    document.querySelector("#fecha_factura").value = "";
                 })
-                .catch(error => console.error("Error al añadir la factura:", error));
+                .catch(e => console.error('error al pedir los datos ', e));
         }
+
+        // Añade un nuevo detalle o modifica uno existente
+        function anadeDetalle() {
+
+            // Recogemos el ID de la factura seleccionada
+            var idFactura = document.querySelector("#factura").value;
+
+            // Comprobamos que se haya seleccionado una factura
+            if (idFactura == -1) {
+                alert("Debes seleccionar antes una factura");
+                return;
+            }
+
+            // Recogemos los datos del detalle introducidos en el formulario
+            var cantidad = document.querySelector("#cantidad").value;
+            var concepto = document.querySelector("#concepto").value;
+            var precio = document.querySelector("#precio").value;
+            var tipo_iva = document.querySelector("#tipo_iva").value;
+
+            // Comprobamos que los campos no estén vacíos
+            if ((cantidad == "") || (concepto == "") || (precio == "") || tipo_iva == "") {
+                alert("Todos los campos son obligatorios");
+                document.querySelector("#cantidad").focus();
+                return;
+            }
+
+            // Creamos el objeto con los datos del detalle
+            var p = {
+                idFactura: idFactura,
+                cantidad: cantidad,
+                concepto: concepto,
+                precio: precio,
+                tipo_iva: tipo_iva
+            };
+
+            // Comprobamos si estamos añadiendo o modificando un detalle
+            if (this.dataset.idid == "-1") {
+
+                // Si el ID es -1, significa que estamos añadiendo un detalle nuevo
+                p.servicio = "anade";
+
+            } else {
+
+                // Si tiene otro ID, significa que estamos modificando un detalle existente
+                p.servicio = "modificarDetalle";
+                p.id = this.dataset.idid;
+            }
+
+            console.log("p: ", p);
+
+            // Preparamos los parámetros de la petición
+            var parametros = {
+                method: 'POST',
+                body: JSON.stringify(p)
+            };
+
+            // Enviamos los datos al servidor
+            fetch(url, parametros)
+                .then(r => r.json())
+
+                // Actualizamos la tabla con los detalles recibidos
+                .then(datos => PintaDetalle(datos))
+                .catch(e => console.error('error al pedir los datos ', e));
+        }
+
+        // Elimina un detalle de la factura seleccionada
+        function borrarDetalle() {
+
+            // Creamos el objeto con el servicio, el ID del detalle y el ID de la factura
+            var p = {
+                servicio: "borra",
+                id: this.dataset.idid,
+                idFactura: document.querySelector("#factura").value
+            }
+
+            // Preparamos los parámetros de la petición
+            var parametros = {
+                method: "POST",
+                body: JSON.stringify(p)
+            };
+
+            // Pedimos confirmación antes de borrar el detalle
+            if (confirm(`¿Estas seguro de borrar "${this.dataset.concepto} ?"`))
+
+                // Si se confirma, enviamos la petición al servidor
+                fetch(url, parametros)
+                    .then(r => r.json())
+
+                    // Actualizamos la tabla con los datos recibidos
+                    .then(datos => PintaDetalle(datos))
+                    .catch(e => console.error('error al pedir los datos ', e));
+        }
+
+        // Recupera los datos de un detalle concreto para poder modificarlo
+        function editarDetalle() {
+
+            // Creamos el objeto con el servicio y el ID del detalle seleccionado
+            var p = {
+                servicio: "selDetalleID",
+                id: this.dataset.idid,
+            }
+
+            // Preparamos los parámetros de la petición
+            var parametros = {
+                method: "POST",
+                body: JSON.stringify(p)
+            };
+
+            // Enviamos la petición al servidor
+            fetch(url, parametros)
+                .then(r => r.json())
+
+                // Enviamos los datos recibidos para rellenar el formulario
+                .then(datos => PintaCampos(datos))
+                .catch(e => console.error('error al pedir los datos ', e));
+        }
+
+        // Carga los datos del detalle seleccionado en los campos del formulario
+        function PintaCampos(datos) {
+
+            // Rellenamos los campos con los datos recibidos del servidor
+            document.querySelector("#cantidad").value = datos.cantidad;
+            document.querySelector("#concepto").value = datos.concepto;
+            document.querySelector("#precio").value = datos.precio;
+            document.querySelector("#tipo_iva").value = datos.tipo_iva;
+
+            // Guardamos el ID del detalle para saber que estamos modificándolo
+            var boton = document.querySelector("#btAnade");
+            boton.dataset.idid = datos.id;
+
+            // Cambiamos el texto del botón para indicar que vamos a modificar
+            boton.innerHTML = "Modificar línea de detalle";
+        }
+
+        // Limpia los campos y deja el botón preparado para añadir un detalle nuevo
+        function Cancelar() {
+
+            // Restauramos los valores iniciales de los campos
+            document.querySelector("#cantidad").value = document.querySelector("#cantidad").defaultValue;
+            document.querySelector("#concepto").value = document.querySelector("#concepto").defaultValue;
+            document.querySelector("#precio").value = document.querySelector("#precio").defaultValue;
+            document.querySelector("#tipo_iva").value = document.querySelector("#tipo_iva").defaultValue;
+
+            // Restablecemos el ID a -1 para indicar que no estamos modificando ningún detalle
+            var boton = document.querySelector("#btAnade");
+            boton.dataset.idid = "-1";
+
+            // Cambiamos el texto del botón a su estado inicial
+            boton.innerHTML = "Añadir línea de detalle";
+        }
+
+        // Se ejecuta cuando termina de cargar la página
+        window.onload = function () {
+
+            // Asignamos los eventos a los botones del formulario de facturas
+            document.querySelector("#btMuestraFactura").onclick = muestraFormFactura;
+            document.querySelector("#btCancelarFactura").onclick = ocultaFormFactura;
+            document.querySelector("#btAnadeFactura").onclick = anadeFactura;
+
+            // Asignamos los eventos relacionados con los detalles
+            document.querySelector("#factura").onchange = PedirDetalle;
+            document.querySelector("#btAnade").onclick = anadeDetalle;
+            document.querySelector("#btCancelar").onclick = Cancelar;
+
+            // Cargamos las facturas al entrar en la página
+            pedirFacturas();
+        }
+
     </script>
 </head>
 
@@ -467,7 +582,7 @@
     <!-- Formulario de línea de detalle  -->
     <div>
         <fieldset>
-            <legend id="legend">Añadir detalle</legend>
+            <legend id="league">Añadir detalle</legend>
             <p>
                 <label for="cantidad">Cantidad: </label>
                 <input type="text" id="cantidad" size="3" value="5" />
