@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+
+    <script>
+
+        var ar = [
+            {
+                nombre: "Jose",
+                apellidos: "gomez romero",
+                dni: "1234567T",
+                edad: 18,
+                dinero: 13
+            },
+            {
+                nombre: "Manuel",
+                apellidos: "fernandez perez",
+                dni: "2345678A",
+                edad: 33,
+                dinero: 20
+            },
+            {
+                nombre: "Paco",
+                apellidos: "Porras porro",
+                dni: "9876543A",
+                edad: 48,
+                dinero: 5
+            },
+        ];
+
+        const mayores25 = ar.filter(persona => persona.edad > 25);
+        console.log(mayores25);
+
+    </script>
+
+</body>
+
+</html>
