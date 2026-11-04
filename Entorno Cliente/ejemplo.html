@@ -15,19 +15,35 @@
             {
                 nombre: "Jose",
                 apellidos: "gomez romero",
-                dni: "1234567T"
+                dni: "1234567T",
+                edad: 18,
+                dinero: 13
             },
             {
                 nombre: "Manuel",
                 apellidos: "fernandez perez",
-                dni: "2345678A"
+                dni: "2345678A",
+                edad: 25,
+                dinero: 20
             },
             {
                 nombre: "Paco",
                 apellidos: "Porras porro",
-                dni: "9876543A"
+                dni: "9876543A",
+                edad: 12,
+                dinero: 5
             },
         ];
+
+        var sumaVarios = ar.reduce(function (suma, ele, i) {
+            console.log("i - " + i + " . edad: " + ele.edad + " . suma:" + suma);
+            return {
+                sumaEdad: suma.sumaEdad + ele.edad,
+                sumaDinero: suma.sumaDinero + ele.dinero
+            }
+        }, { sumaEdad: 0, sumaDinero: 0 });
+
+        console.log("sumaVarios: ", sumaVarios);
 
         console.log("ar: ", ar);
 

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plantilla</title>
+
+    <script>
+
+        var ar = [
+            {
+                precio: 18,
+                cantidad: 13
+            },
+            {
+                precio: 25,
+                cantidad: 20
+            },
+            {
+                precio: 12,
+                cantidad: 5
+            },
+        ];
+
+        var produceVarios = ar.reduce(function (produce, ele, i) {
+            return {
+                productoPrecio: produce.productoPrecio * ele.precio,
+                productoCantidad: produce.productoCantidad * ele.cantidad
+            }
+        }, { productoPrecio: 1, productoCantidad: 1 });
+
+        console.log("Producto del precio: ", produceVarios.productoPrecio, " Producto de la cantidad: ", produceVarios.productoCantidad);
+
+    </script>
+
+</head>
+
+<body>
+
+</body>
+
+</html>
