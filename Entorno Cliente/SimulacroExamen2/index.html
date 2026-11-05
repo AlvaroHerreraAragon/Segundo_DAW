@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de calificaciones</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+        }
+
+        h1,
+        h2 {
+            color: #333;
+        }
+
+        select,
+        input,
+        button {
+            padding: 8px;
+            margin: 5px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #eeeeee;
+        }
+
+        .resumen {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: #f2f2f2;
+        }
+
+        .formulario {
+            margin-top: 25px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Gestión de alumnos y calificaciones</h1>
+
+    <h2>Seleccionar alumno</h2>
+
+    <select id="alumno">
+        <option value="-1">Selecciona un alumno</option>
+    </select>
+
+    <h2>Calificaciones</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Asignatura</th>
+                <th>Nota</th>
+                <th>Fecha</th>
+                <th>Modificar</th>
+                <th>Borrar</th>
+            </tr>
+        </thead>
+
+        <tbody id="filas_tabla">
+        </tbody>
+    </table>
+
+    <div class="resumen">
+
+        <h2>Resumen de calificaciones</h2>
+
+        <p>
+            Asignaturas:
+            <span id="asignaturas"></span>
+        </p>
+
+        <p>
+            Número de aprobados:
+            <span id="aprobadas">0</span>
+        </p>
+
+        <p>
+            Nota media:
+            <span id="media">0</span>
+        </p>
+
+    </div>
+
+    <div class="formulario">
+
+        <h2>Datos de la calificación</h2>
+
+        <form id="formulario">
+
+            <label for="asignatura">Asignatura:</label>
+            <input type="text" id="asignatura">
+
+            <label for="nota">Nota:</label>
+            <input type="number" id="nota" min="0" max="10" step="0.01">
+
+            <label for="fecha">Fecha:</label>
+            <input type="date" id="fecha">
+
+            <br>
+
+            <button type="button" id="btAnade" data-idid="-1">
+                Añadir calificación
+            </button>
+
+            <button type="button" id="btCancelar">
+                Cancelar
+            </button>
+
+        </form>
+
+    </div>
+
+    <script>
+
+
+        var url = "servidor.php";
+
+        // 1. pedirAlumnos()
+        // Función que solicita al servidor el listado de alumnos
+        function pedirAlumnos() {
+
+            var p = {
+                servicio: "alumnos"
+            };
+
+            // Preparamos los parámetros de la petición
+            var parametros = {
+                method: "POST",
+                body: JSON.stringify(p)
+            };
+
+            // Enviamos la petición y procesamos los datos recibidos
+            fetch(url, parametros)
+                .then(r => r.json())
+                .then(datos => listadoAlumnos(datos))
+                .catch(e => console.error('error al pedir los datos ', e));
+        }
+
+        // 2. listadoAlumnos(datos)
+        // Función que introduce los alumnos recibidos en el select
+        function listadoAlumnos(datos) {
+
+            var select = document.getElementById("alumno");
+
+            // Vaciamos el select antes de introducir los alumnos
+            select.innerHTML = "";
+
+            // Creamos la primera opción para seleccionar un alumno
+            var opcion = document.createElement("option");
+            opcion.value = "-1";
+            opcion.innerHTML = "Selecciona un alumno";
+            select.appendChild(opcion);
+
+            // Recorremos los alumnos recibidos
+            datos.forEach(function (c) {
+
+                opcion = document.createElement("option");
+
+                // Guardamos el ID del alumno como valor de la opción
+                opcion.value = c.id;
+
+                // Mostramos el nombre y el curso del alumno
+                opcion.innerHTML = c.nombre + " - " + c.curso;
+
+                select.appendChild(opcion);
+            });
+        }
+
+        // 3. PedirCalificaciones()
+        // Función que solicita las calificaciones del alumno seleccionado
+        function PedirCalificaciones() {
+
+            var p = {
+                servicio: "calificaciones",
+                idAlumno: document.getElementById("alumno").value
+            };
+
+            // Preparamos los parámetros de la petición
+            var parametros = {
+                method: "POST",
+                body: JSON.stringify(p)
+            };
+
+            // Enviamos la petición y mostramos las calificaciones recibidas
+            fetch(url, parametros)
+                .then(r => r.json())
+                .then(datos => PintaCalificaciones(datos))
+                .catch(e => console.error('error al pedir los datos ', e));
+        }
+
+        // 4. PintaCalificaciones(datos)
+        // Función que muestra las calificaciones recibidas en la tabla
+        function PintaCalificaciones(datos) {
+
+            // Vaciamos el cuerpo de la tabla
+            document.getElementById("filas_tabla").innerHTML = "";
+
+            // Si hay calificaciones, rellenamos la tabla
+            if (datos.length > 0) {
+                LlenaTabla(datos, document.getElementById("filas_tabla"));
+            }
+
+            // Actualizamos el resumen de las calificaciones
+            resumenCalificaciones(datos);
+
+            // Limpiamos el formulario después de actualizar la tabla
+            Cancelar();
+        }
+
+        // 5. CreaFila(aCol)
+        // Función que crea una fila de la tabla con los datos recibidos
+        function CreaFila(aCol) {
+
+            var fila = document.createElement("tr");
+            var col;
+            var cont;
+
+            // Recorremos los valores del objeto recibido
+            Object.values(aCol).forEach(function (valor) {
+
+                // Creamos una celda para cada valor
+                col = document.createElement("td");
+
+                // Introducimos el valor dentro de la celda
+                cont = document.createTextNode(valor);
+                col.appendChild(cont);
+
+                // Añadimos la celda a la fila
+                fila.appendChild(col);
+            });
+
+            // Devolvemos la fila creada
+            return fila;
+        }
+
+        // 6. LlenaTabla(aTabla, cuerpoTabla)
+        // Función que rellena la tabla con las calificaciones recibidas
+        function LlenaTabla(aTabla, cuerpoTabla) {
+
+            var fila, td, botonModificar, botonBorrar;
+
+            // Vaciamos la tabla antes de introducir los nuevos datos
+            cuerpoTabla.innerHTML = "";
+
+            // Recorremos todas las calificaciones recibidas
+            aTabla.forEach(function (d) {
+
+                // Creamos una fila únicamente con asignatura, nota y fecha
+                fila = CreaFila({
+                    asignatura: d.asignatura,
+                    nota: d.nota,
+                    fecha: d.fecha
+                });
+
+                // Creamos la celda y el botón para modificar la calificación
+                td = document.createElement("td");
+                botonModificar = document.createElement("button");
+                botonModificar.innerHTML = "Modificar";
+
+                // Guardamos el ID de la calificación en el botón
+                botonModificar.dataset.idid = d.id;
+
+                // Asignamos la función que se ejecutará al pulsar el botón
+                botonModificar.onclick = editarCalificacion;
+
+                td.appendChild(botonModificar);
+                fila.appendChild(td);
+
+                // Creamos la celda y el botón para borrar la calificación
+                td = document.createElement("td");
+                botonBorrar = document.createElement("button");
+                botonBorrar.innerHTML = "Borrar";
+
+                // Guardamos el ID de la calificación en el botón
+                botonBorrar.dataset.idid = d.id;
+
+                // Asignamos la función que se ejecutará al pulsar el botón
+                botonBorrar.onclick = borrarCalificacion;
+
+                td.appendChild(botonBorrar);
+                fila.appendChild(td);
+
+                // Añadimos la fila completa al cuerpo de la tabla
+                cuerpoTabla.appendChild(fila);
+            });
+        }
+
+        // 7. anadeCalificacion()
+        // Función que añade o modifica una calificación
+        function anadeCalificacion() {
+
+            // Recogemos los valores del formulario
+            var idAlumno = document.getElementById("alumno").value;
+            var asignatura = document.getElementById("asignatura").value;
+            var nota = document.getElementById("nota").value;
+            var fecha = document.getElementById("fecha").value;
+
+            // Comprobamos que se haya seleccionado un alumno
+            if (idAlumno == "-1") {
+                alert("Debes seleccionar un alumno");
+                return;
+            }
+
+            // Comprobamos que los campos no estén vacíos
+            if (asignatura == "" || nota == "" || fecha == "") {
+                alert("Debes rellenar todos los campos");
+                return;
+            }
+
+            // Creamos el objeto con los datos de la calificación
+            var p = {
+                servicio: "anade",
+                idAlumno: idAlumno,
+                asignatura: asignatura,
+                nota: nota,
+                fecha: fecha
+            };
+
+            // Si el botón tiene un ID diferente de -1, modificamos
+            if (document.getElementById("btAnade").dataset.idid != "-1") {
+                p.servicio = "modificar";
+                p.id = document.getElementById("btAnade").dataset.idid;
+            }
+
+            // Preparamos los parámetros de la petición
+            var parametros = {
+                method: "POST",
+                body: JSON.stringify(p)
+            };
+
+            // Enviamos la petición al servidor
+            fetch(url, parametros)
+                .then(r => r.json())
+                .then(datos => PintaCalificaciones(datos))
+                .catch(e => console.error('error al enviar los datos ', e));
+        }
+
+        // 8. editarCalificacion()
+        // Función que busca una calificación para modificarla
+        function editarCalificacion() {
+
+            // Creamos el objeto con el servicio y el ID de la calificación
+            var p = {
+                servicio: "selCalificacionID",
+                id: this.dataset.idid
+            };
+
+            // Preparamos los parámetros de la petición
+            var parametros = {
+                method: "POST",
+                body: JSON.stringify(p)
+            };
+
+            // Enviamos la petición al servidor
+            fetch(url, parametros)
+                .then(r => r.json())
+                .then(datos => PintaCampos(datos))
+                .catch(e => console.error('error al pedir los datos ', e));
+        }
+
+        // 9. PintaCampos(datos)
+        // Función que muestra los datos de una calificación en el formulario
+        function PintaCampos(datos) {
+
+            // Rellenamos los campos del formulario
+            document.getElementById("asignatura").value = datos.asignatura;
+            document.getElementById("nota").value = datos.nota;
+            document.getElementById("fecha").value = datos.fecha;
+
+            // Guardamos el ID de la calificación en el botón
+            document.getElementById("btAnade").dataset.idid = datos.id;
+
+            // Cambiamos el texto del botón
+            document.getElementById("btAnade").innerHTML = "Modificar calificación";
+        }
+
+        // 10. borrarCalificacion()
+        // Función que elimina una calificación
+        function borrarCalificacion() {
+
+            // Confirmamos que queremos borrar la calificación
+            if (!confirm("¿Estás seguro de que quieres borrar esta calificación?")) {
+                return;
+            }
+
+            // Creamos el objeto con el servicio y los identificadores
+            var p = {
+                servicio: "borra",
+                id: this.dataset.idid,
+                idAlumno: document.getElementById("alumno").value
+            };
+
+            // Preparamos los parámetros de la petición
+            var parametros = {
+                method: "POST",
+                body: JSON.stringify(p)
+            };
+
+            // Enviamos la petición al servidor
+            fetch(url, parametros)
+                .then(r => r.json())
+                .then(datos => PintaCalificaciones(datos))
+                .catch(e => console.error('error al borrar los datos ', e));
+        }
+
+        // 11. Cancelar()
+        // Función que limpia el formulario
+        function Cancelar() {
+
+            // Limpiamos los campos del formulario
+            document.getElementById("asignatura").value = "";
+            document.getElementById("nota").value = "";
+            document.getElementById("fecha").value = "";
+
+            // Restauramos el ID inicial del botón
+            document.getElementById("btAnade").dataset.idid = "-1";
+
+            // Restauramos el texto del botón
+            document.getElementById("btAnade").innerHTML = "Añadir calificación";
+        }
+
+        // 12. resumenCalificaciones(datos)
+        // Función que calcula el resumen de las calificaciones
+        function resumenCalificaciones(datos) {
+
+            // Obtenemos los nombres de las asignaturas con map()
+            var asignaturas = datos.map(function (c) {
+                return c.asignatura;
+            });
+
+            // Mostramos las asignaturas
+            document.getElementById("asignaturas").innerHTML = asignaturas.join(", ");
+
+            // Filtramos las calificaciones aprobadas con filter()
+            var aprobadas = datos.filter(function (c) {
+                return c.nota >= 5;
+            });
+
+            // Mostramos el número de asignaturas aprobadas
+            document.getElementById("aprobadas").innerHTML = aprobadas.length;
+
+            // Sumamos todas las notas con reduce()
+            var suma = datos.reduce(function (total, c) {
+                return total + parseFloat(c.nota);
+            }, 0);
+
+            // Calculamos la media
+            var media = 0;
+
+            if (datos.length > 0) {
+                media = suma / datos.length;
+            }
+
+            // Mostramos la media con dos decimales
+            document.getElementById("media").innerHTML = media.toFixed(2);
+        }
+
+        // window.onload
+        // Función que se ejecuta cuando se carga la página
+        window.onload = function () {
+
+            // Pedimos los alumnos al servidor
+            pedirAlumnos();
+
+            // Cuando cambiamos de alumno, pedimos sus calificaciones
+            document.getElementById("alumno").onchange = PedirCalificaciones;
+
+            // Asignamos el evento al botón de añadir o modificar
+            document.getElementById("btAnade").onclick = anadeCalificacion;
+
+            // Asignamos el evento al botón de cancelar
+            document.getElementById("btCancelar").onclick = Cancelar;
+        };
+
+
+    </script>
+
+</body>
+
+</html>
