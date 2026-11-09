@@ -1,45 +1,67 @@
 <!DOCTYPE html>
 
 <head>
-	<meta charset="utf-8" />
-	<title>Elementos de la misma altura</title>
-	<style type="text/css">
-		body {
-			-webkit-columns: 3;
-			-webkit-column-gap: 15px;
-			-webkit-column-rule: 2px solid black;
-		}
+    <meta charset="utf-8" />
+    <title>Elementos de la misma altura</title>
+    <style type="text/css">
+        body {
+            margin: 8px;
+        }
 
-		div {
-			background-color: rgb(238, 132, 211);
-			text-align: center;
-		}
-	</style>
+        #contenedor {
+            display: flex;
+            gap: 15px;
+            align-items: flex-start;
+        }
+
+        p {
+            flex: 1;
+            background-color: rgb(238, 132, 211);
+            text-align: center;
+            overflow-wrap: anywhere;
+            padding: 10px;
+            margin: 0;
+            position: relative;
+        }
+
+        p:not(:last-child)::after {
+            content: "";
+            position: absolute;
+            right: -8px;
+            top: 0;
+            height: 100%;
+            border-right: 2px solid black;
+        }
+
+        p:last-child {
+            border-right: none;
+        }
+    </style>
 </head>
 
 <body>
-	<div id="contenedor">
+    <div id="contenedor">
 
-		<p>
-			La solución fue propuesta por el diseñador Roger Johansson en su artículo Equal height boxes
-			with CSS (http://www.456bereastreet.com/archive/200405/equal_height_boxes_with_css/) y
-			se basa en el uso avanzado de la propiedad display de CSS.
-		</p>
-		<p>
-			Gracias a la propiedad display de CSS, cualquier elemento se puede comportar como una tabla,
-			una fila de tabla o una celda de tabla, independientemente del tipo de elemento que se trate.
-			De esta forma, los elementos div que forman las columnas de la página en realidad se
-			comportan como celdas de tabla, lo que permite que el navegador las muestre con la misma altura.
-			El único inconveniente de la solución anterior es que el navegador Internet Explorer 7 y sus
-			versiones anteriores no son capaces de manejar los valores más avanzados de la propiedad
-			display, por lo que en esos navegadores la página no muestra correctamente su estructura.
-		</p>
-		<p>
-			A continuación, se utiliza la propiedad display de CSS para mostrar los elementos div
-			anteriores como si fueran celdas de una tabla de datos
-		</p>
+        <p>
+            La solución fue propuesta por el diseñador Roger Johansson en su artículo Equal height boxes
+            with CSS (http://www.456bereastreet.com/archive/200405/equal_height_boxes_with_css/) y
+            se basa en el uso avanzado de la propiedad display de CSS.
+        </p>
+        <p>
+            Gracias a la propiedad display de CSS, cualquier elemento se puede comportar como una tabla,
+            una fila de tabla o una celda de tabla, independientemente del tipo de elemento que se trate.
+            De esta forma, los elementos div que forman las columnas de la página en realidad se
+            comportan como celdas de tabla, lo que permite que el navegador las muestre con la misma altura.
+            El único inconveniente de la solución anterior es que el navegador Internet Explorer 7 y sus
+            versiones anteriores no son capaces de manejar los valores más avanzados de la propiedad
+            display, por lo que en esos navegadores la página no muestra correctamente su estructura.
+        </p>
+        <p>
+            A continuación, se utiliza la propiedad display de CSS para mostrar los elementos div
+            anteriores como si fueran celdas de una tabla de datos
+        </p>
 
-	</div>
+    </div>
 </body>
 
 </html>
