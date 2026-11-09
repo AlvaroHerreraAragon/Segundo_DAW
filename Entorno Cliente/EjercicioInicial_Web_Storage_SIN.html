@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Ejemplo Web Storage</title>
+    <style>
+        div {
+            border: 2px solid blue;
+            margin: 2em;
+
+            padding: 1em;
+        }
+    </style>
+    <script type="text/javascript">
+
+        window.onload = function () {
+            if (localStorage.nVisitas == null)
+                localStorage.nVisitas = 0;
+
+            localStorage.nVisitas++;
+
+            document.getElementById("nvisitas").textContent = "Numero de visitas: " + localStorage.nVisitas;
+
+            document.getElementById("btGuardar").addEventListener("click", guardarDatos);
+            document.getElementById("btContenido").addEventListener("click", mostrarContenido);
+            document.getElementById("btMostrar").addEventListener("click", mostrarDato);
+
+        }
+
+        function guardarDatos() {
+            localStorage.nombre = document.getElementById("etiqueta").value;
+            localStorage.dato = document.getElementById("dato").value;
+        }
+
+        function mostrarContenido() {
+            document.getElementById("contenido").innerHTML = localStorage.nombre + ": " + localStorage.dato;
+        }
+
+        function mostrarDato() {
+            document.getElementById("sal").innerHTML = localStorage.dato;
+        }
+
+    </script>
+</head>
+
+<body>
+
+    <h3>Esto es un ejermplo de Web Storage</h3>
+
+    <label>Nombre: </label>
+    <input type="text" name="etiqueta" id="etiqueta">
+    <br><br>
+    <label>Dato: </label>
+    <input type="text" name="dato" id="dato">
+    <br /><br />
+
+    <hr>
+    <br><br>
+    <button id="btGuardar">Guardar Dato</button>
+    <button id="btMostrar">Mostrar Dato</button>
+    <button id="btContenido">Contenido del Web Storage</button>
+
+    <button id="btBorrarDato">Borrar Dato</button>
+    <button id="btBorrarTodo">Borrar Todo</button>
+
+    <p>
+    <div id="sal">
+        Aquí ponemos el dato leido del localStorage
+    </div>
+    <div id="nvisitas">
+        Aquí se muestra el número de visitas
+    </div>
+    </p>
+    <p>
+    <div id="contenido">
+        Contenido de todo el Web Storage
+    </div>
+    </p>
+
+</body>
+
+</html>

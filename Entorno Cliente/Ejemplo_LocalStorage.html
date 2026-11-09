@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script>
+        window.onload = function () {
+            if (localStorage.nVisitas == null)
+                localStorage.nVisitas = 0;
+
+            localStorage.nVisitas++;
+
+            alert("Numero de visitas: " + localStorage.nVisitas);
+        }
+    </script>
+</head>
+
+<body>
+
+</body>
+
+</html>
