@@ -119,4 +119,26 @@ public class Database {
         }
 
     }
+
+    public static int contarProductos() throws SQLException {
+        int total = 0;
+        String sql = "SELECT COUNT(*) FROM producto;";
+        try (Connection con = conectar(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                total = rs.getInt(1);
+            }
+        }
+        return total;
+    }
+
+    public static String mayorPrecioProductos() throws SQLException {
+        String nombre = "";
+        String sql = "SELECT nombre FROM producto WHERE precio = (SELECT MAX(precio) FROM producto);";
+        try (Connection con = conectar(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                nombre = rs.getString("nombre");
+            }
+        }
+        return nombre;
+    }
 }

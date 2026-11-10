@@ -20,10 +20,14 @@ public class ProductoServlet extends HttpServlet {
             HttpServletResponse response) throws ServletException, IOException {
         try {
             var productos = Database.obtenerProductos();
+            int total = Database.contarProductos();
+            String nombre = Database.mayorPrecioProductos();
+
+            request.setAttribute("totalProductos", total);
+            request.setAttribute("mayorProductos", nombre);
             System.out.println("Productos recuperados!" + productos.size());
             request.setAttribute("productos", productos);
-            request.getRequestDispatcher("/productos.jsp")
-                    .forward(request, response);
+            request.getRequestDispatcher("productos.jsp").forward(request, response);
         } catch (SQLException e) {
             log("Error al consultar productos", e);
             response.sendError(500, "No se pudieron cargar los productos");
