@@ -95,5 +95,31 @@ public class Database {
         }
 
     }
+    
+    public static void buscarPeliculasTitulo(String texto) throws SQLException {
+        String sql = "SELECT nombre FROM pelicula WHERE nombre LIKE ?"
+                + "ORDER BY nombre ASC";
+
+        if (texto == null || texto.isBlank()) {
+            throw new IllegalArgumentException("Texto invalido o vacio");
+        }
+
+        try (Connection con = conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, "%" + texto + "%");
+            ResultSet rs = ps.executeQuery();
+
+            int totalPeliculasTitulo = 0;
+            while (rs.next()) {
+                System.out.println("Nombre: " + rs.getString("nombre"));
+                totalPeliculasTitulo++;
+            }
+
+            if (totalPeliculasTitulo > 0) {
+                System.out.println("Total: " + totalPeliculasTitulo + " peliculas");
+            } else {
+                System.out.println("No se encontraron peliculas con esos datos");
+            }
+        }
+    }
 
 }

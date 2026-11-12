@@ -14,12 +14,11 @@
 
         <c:choose>
 
-            <%-- Formulario para editar una película --%>
             <c:when test="${not empty pelicula}">
 
                 <h1>Editar película</h1>
 
-                <form action="${pageContext.request.contextPath}/peliculas" method="POST">
+                <form action="peliculas" method="POST">
 
                     <input type="hidden" name="id" value="${pelicula.id}">
 
@@ -50,6 +49,21 @@
 
                 <table border="1" cellpadding="8">
 
+                    <form action="peliculas" method="GET">
+                        <label>Duracion Maxima</label>
+                        <input type="text" id="duracionMaxima" name="duracionMaxima">
+                        <input type="submit" value="Filtrar">
+                    </form>
+                    <br>
+                    <a href="peliculas">Mostrar todas</a>
+                    <br>
+                    
+                    <form action="peliculas" method="GET">
+                        <label>Buscar por titulo</label>
+                        <input type="text" id="buscarPeliculasTitulo" name="buscarPeliculasTitulo">
+                        <input type="submit" value="Buscar">
+                    </form>
+
                     <tr>
                         <th>ID</th>
                         <th>Título</th>
@@ -73,13 +87,13 @@
                                     <td><c:out value="${pelicula.duracion}"/></td>
 
                                     <td>
-                                        <a href="${pageContext.request.contextPath}/peliculas?editar=${pelicula.id}">
+                                        <a href="peliculas?editar=${pelicula.id}">
                                             Editar
                                         </a>
                                     </td>
 
                                     <td>
-                                        <form action="${pageContext.request.contextPath}/peliculas" method="POST"
+                                        <form action="peliculas" method="POST"
                                               onsubmit="return confirm('¿Estás seguro de que deseas eliminar esta película?');">
 
                                             <input type="hidden" name="id" value="${pelicula.id}">

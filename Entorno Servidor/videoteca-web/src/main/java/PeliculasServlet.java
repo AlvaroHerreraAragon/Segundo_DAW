@@ -7,6 +7,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -30,7 +32,26 @@ public class PeliculasServlet extends HttpServlet {
                 return;
             }
 
-            request.setAttribute("peliculas", peliculas);
+            List<Pelicula> peliculasFiltradas = new ArrayList<>();
+            String duracionMaxima = request.getParameter("duracionMaxima");
+
+            if (duracionMaxima == null || duracionMaxima.isBlank()) {
+                request.setAttribute("peliculas", peliculas);
+
+            } else {
+                double limite = Double.parseDouble(duracionMaxima);
+                if (limite <= 0) {
+                    response.sendError(400, "La duración máxima debe ser mayor que cero");
+                    return;
+                }
+                for (Pelicula pelicula : peliculas) {
+                    if (pelicula.getDuracion() <= limite) {
+                        peliculasFiltradas.add(pelicula);
+                    }
+                }
+                request.setAttribute("peliculas", peliculasFiltradas);
+            }
+
             request.getRequestDispatcher("peliculas.jsp").forward(request, response);
         } catch (SQLException e) {
             log("Error al consultar peliculas", e);
@@ -46,37 +67,29 @@ public class PeliculasServlet extends HttpServlet {
 
             String accion = request.getParameter("accion");
 
-            // Comprobamos si queremos eliminar una película
             if ("eliminar".equals(accion)) {
-
                 int id = Integer.parseInt(request.getParameter("id"));
-
                 int resultado = Database.borrarPelicula(id);
 
                 if (resultado == 0) {
                     response.sendError(404, "No existe esa pelicula");
                     return;
                 }
-
                 response.sendRedirect("peliculas");
                 return;
             }
 
-            // Recogemos los datos de la película
             int id = Integer.parseInt(request.getParameter("id"));
             String nombre = request.getParameter("nombre");
             double duracion = Double.parseDouble(request.getParameter("duracion"));
 
-            // Comprobamos que los datos sean correctos
             if (nombre == null || nombre.isBlank() || duracion <= 0) {
                 response.sendError(400, "El título y la duración no son válidos");
                 return;
             }
 
-            // Actualizamos la película
             Database.actualizarPelicula(id, nombre, duracion);
 
-            // Volvemos al listado
             response.sendRedirect("peliculas");
 
         } catch (SQLException e) {
