@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Plantilla</title>
+
+    <style type="text/css">
+        #texto {
+            width: 700px;
+            height: 500px;
+            border: 1px solid blue;
+            padding: 0.4em;
+        }
+
+        span {
+            border: 2px solid red;
+            margin: 1.1em;
+            padding: .2em;
+            cursor: pointer;
+            background-color: pink;
+        }
+    </style>
+
+    <script type="text/javascript">
+
+        var texto;
+
+        function ponerNegrita() {
+            document.execCommand('bold', false, null);
+            event.preventDefault();
+        }
+
+        function ponerCursiva(e) {
+            document.execCommand('italic', false, null);
+            e.preventDefault();
+        }
+
+        function ponerSubrayado(e) {
+            document.execCommand('underline', false, null);
+            event.preventDefault();
+        }
+        function ponerColor(e) {
+            document.execCommand('foreColor', false, "#ff0000");
+            event.preventDefault();
+        }
+
+        window.onload = function () {
+            texto = document.getElementById("texto");
+
+            document.getElementById("negrita").addEventListener("mousedown", ponerNegrita, false);
+            document.getElementById("cursiva").addEventListener("mousedown", ponerCursiva, false);
+            document.getElementById("subrayado").addEventListener("mousedown", ponerSubrayado, false);
+            document.getElementById("color").addEventListener("mousedown", ponerColor, false);
+            document.getElementById("guardar").addEventListener("mousedown", guardarTexto, false);
+            document.getElementById("documentos").addEventListener("change", cargarDocumento);
+
+            cargarTexto();
+            cargarDocumentos();
+        }
+
+        //Codigo para guardar el texto en el WebStorage:
+        function guardarTexto() {
+            var contenido = document.getElementById("texto").innerHTML;
+            var nombre = document.getElementById("nombre").value;
+            localStorage.setItem(nombre, contenido);
+
+            var opcion = document.createElement("option");
+            opcion.textContent = nombre;
+            opcion.value = nombre;
+            document.getElementById("documentos").appendChild(opcion);
+        }
+
+        //Codigo para cargar el texto:
+        function cargarTexto() {
+            var contenido = localStorage.getItem("contenido");
+
+            if (contenido !== null) {
+                texto.innerHTML = contenido;
+            }
+        }
+
+        //Codigo para cargar el texto guardado dentro del div:
+        function cargarDocumento() {
+            var documento = document.getElementById("documentos").value;
+            var contenido = localStorage.getItem(documento);
+            document.getElementById("texto").innerHTML = contenido;
+        }
+
+        function cargarDocumentos() {
+            for (var i = 0; i < localStorage.length; i++) {
+                var nombre = localStorage.key(i);
+                var opcion = document.createElement("option");
+                opcion.textContent = nombre;
+                opcion.value = nombre;
+                document.getElementById("documentos").appendChild(opcion);
+            }
+        }
+
+    </script>
+</head>
+
+<body>
+
+    <h3>Procesador de Textos</h3>
+    <p>
+        <span id="guardar">Guardar</span>
+        <span id="negrita">Negrita</span>
+        <span id="cursiva">Cursiva</span>
+        <span id="subrayado">Subrayado</span>
+        <span id="color">Color</span>
+    </p>
+    <p>
+        Nombre del texto:
+        <input type="text" id="nombre">
+    </p>
+
+    <p>
+        Textos guardados:
+        <select id="documentos">
+            <option value="">Selecciona un texto</option>
+        </select>
+    </p>
+
+    <div id="texto" contentEditable="true" spellcheck="true">
+        Esto es un texto de prueba para no tener que estar escribiendo.
+    </div>
+    <p id="sal"></p>
+
+</body>
+
+</html>
