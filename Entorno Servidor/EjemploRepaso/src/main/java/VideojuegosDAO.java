@@ -61,12 +61,12 @@ public class VideojuegosDAO {
         String sql = "SELECT * FROM videojuego";
 
         try (Connection con = Database.conectar(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
-            
+
             int total = 0;
-            while (rs.next()) {  
+            while (rs.next()) {
                 Videojuego videojuego = new Videojuego(rs.getInt("id"), rs.getString("titulo"), rs.getString("plataforma"),
                         rs.getString("genero"), rs.getDouble("horas"), rs.getDouble("valoracion"));
-                
+
                 videojuegos.add(videojuego);
                 total++;
             }
@@ -74,16 +74,16 @@ public class VideojuegosDAO {
         }
         return videojuegos;
     }
-    
+
     public static Videojuego buscarVideojuego(int id) throws SQLException {
-        
+
         String sql = "SELECT * FROM videojuego WHERE id = ?";
-        
+
         try (Connection con = Database.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             ResultSet rs = ps.executeQuery();
-            
-            if(rs.next()) {
+
+            if (rs.next()) {
                 Videojuego videojuego = new Videojuego(rs.getInt("id"), rs.getString("titulo"), rs.getString("plataforma"),
                         rs.getString("genero"), rs.getDouble("horas"), rs.getDouble("valoracion"));
                 return videojuego;
@@ -93,11 +93,11 @@ public class VideojuegosDAO {
             }
         }
     }
-    
+
     public static int actualizarVideojuego(Videojuego videojuego) throws SQLException {
-        
+
         String sql = "UPDATE videojuego SET titulo = ?, plataforma = ?, genero = ?, horas = ?, valoracion = ? WHERE id = ?";
-        
+
         if (videojuego == null) {
             throw new IllegalArgumentException("El videojuego no puede ser null");
         }
@@ -121,7 +121,7 @@ public class VideojuegosDAO {
         if (videojuego.getValoracion() < 0 || videojuego.getValoracion() > 10) {
             throw new IllegalArgumentException("Las valoraciones deben estar entre 0 y 10");
         }
-        
+
         try (Connection con = Database.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, videojuego.getTitulo());
             ps.setString(2, videojuego.getPlataforma());
@@ -132,27 +132,27 @@ public class VideojuegosDAO {
             return ps.executeUpdate();
         }
     }
-    
+
     public static int eliminarVideojuego(int id) throws SQLException {
-        
+
         String sql = "DELETE from videojuego WHERE id = ?";
-        
+
         try (Connection con = Database.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setInt(1, id);
             return ps.executeUpdate();
         }
     }
-    
+
     public static void buscarVideojuegos(String genero, double horasMaximas, double valoracionMinima) throws SQLException {
-        
+
         String sql = "SELECT * FROM videojuego where genero = ? AND horas <= ? AND valoracion >= ? order by valoracion desc, horas asc;";
-        
+
         try (Connection con = Database.conectar(); PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, genero);
             ps.setDouble(2, horasMaximas);
             ps.setDouble(3, valoracionMinima);
             ResultSet rs = ps.executeQuery();
-            
+
             int totalVideojuegos = 0;
             while (rs.next()) {
                 System.out.println("ID: " + rs.getInt("id"));
@@ -163,7 +163,7 @@ public class VideojuegosDAO {
                 System.out.println("Valoracion: " + rs.getDouble("valoracion"));
                 totalVideojuegos++;
             }
-            
+
             if (totalVideojuegos > 0) {
                 System.out.println("Total: " + totalVideojuegos + " videojuegos");
             } else {
@@ -171,8 +171,38 @@ public class VideojuegosDAO {
             }
         }
     }
-    
+
     public static void resumenPorGenero() throws SQLException {
-        
+
+        String sql = "SELECT genero, COUNT(*) AS numero_videojuegos, "
+                + "AVG(horas) AS media_horas, "
+                + "AVG(valoracion) AS media_valoracion "
+                + "FROM videojuego "
+                + "GROUP BY genero "
+                + "HAVING COUNT(*) >= 2 "
+                + "ORDER BY media_valoracion DESC";
+
+        try (Connection con = Database.conectar(); PreparedStatement ps = con.prepareStatement(sql); ResultSet rs = ps.executeQuery()) {
+
+            int totalGeneros = 0;
+
+            while (rs.next()) {
+                System.out.println("Género: " + rs.getString("genero"));
+                System.out.println("Número de videojuegos: " + rs.getInt("numero_videojuegos"));
+                System.out.println("Media de horas: " + rs.getDouble("media_horas"));
+                System.out.println("Media de valoración: " + rs.getDouble("media_valoracion"));
+
+                System.out.println("---------------------------");
+
+                totalGeneros++;
+            }
+
+            if (totalGeneros > 0) {
+                System.out.println("Total de géneros: " + totalGeneros);
+            } else {
+                System.out.println("No se encontraron géneros con al menos 2 videojuegos");
+            }
+        }
     }
+
 }
