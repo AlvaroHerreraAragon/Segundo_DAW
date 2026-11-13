@@ -1,15 +1,249 @@
+
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servidor 3
-    </title>
+    <title>Eclipse GlassFish en Windows 11</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background: #eff6ff;
+        }
+
+        header {
+            background: #1e3a8a;
+            color: white;
+            padding: 25px 5%;
+            text-align: center;
+        }
+
+        nav {
+            background: #172554;
+            padding: 12px 5%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+        }
+
+        main {
+            max-width: 950px;
+            margin: 25px auto;
+            padding: 0 18px;
+        }
+
+        section {
+            background: white;
+            padding: 22px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            scroll-margin-top: 65px;
+        }
+
+        h2 {
+            color: #1e40af;
+        }
+
+        a {
+            color: #1d4ed8;
+        }
+
+        pre {
+            background: #111827;
+            color: white;
+            padding: 14px;
+            border-radius: 6px;
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: Consolas, monospace;
+        }
+
+        .captura-img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            margin: 15px auto;
+            border-radius: 6px;
+        }
+    </style>
 </head>
 
 <body>
+    <header>
+        <h1>Eclipse GlassFish 8 en Windows 11</h1>
+        <p>Instalación y configuración para ejecutar una aplicación web Java.</p>
+    </header>
 
+    <nav>
+        <a href="index.html">Inicio</a>
+        <a href="#requisitos">Requisitos</a>
+        <a href="#descarga">Descarga</a>
+        <a href="#instalacion">Instalación y configuración</a>
+        <a href="#prueba">Prueba de funcionamiento</a>
+    </nav>
+
+    <main>
+        <section>
+            <h2>1. ¿Qué es Eclipse GlassFish?</h2>
+            <p>
+                Eclipse GlassFish es un servidor de aplicaciones de código abierto que implementa
+                la plataforma Jakarta EE. Permite ejecutar aplicaciones web desarrolladas con
+                tecnologías Java como Servlets, JSP y Enterprise JavaBeans (EJB).
+                Esta guía explica cómo instalarlo en Windows 11 y comprobar que puede ejecutar código Java.
+            </p>
+        </section>
+
+        <section id="requisitos">
+            <h2>2. Requisitos previos</h2>
+            <ul>
+                <li>Windows 11.</li>
+                <li>Java JDK 21 o superior.</li>
+                <li>Conexión a Internet para descargar el software.</li>
+                <li>Espacio suficiente en el disco para descomprimir los archivos.</li>
+            </ul>
+
+            <h3>Comprobar Java</h3>
+            <ol>
+                <li>Abre una terminal CMD de Windows.</li>
+                <li>Comprueba que Java está instalado:</li>
+            </ol>
+            <pre><code>java -version
+javac -version</code></pre>
+            <p>
+                Los dos comandos deben mostrar la versión instalada. GlassFish 8 requiere
+                Java 21 o una versión posterior.
+            </p>
+            <p class="captura"><img class="captura-img" src="imagenes/imagen1.png" alt="Versión de Java instalada"></p>
+        </section>
+
+        <section id="descarga">
+            <h2>3. Descargar Eclipse GlassFish</h2>
+            <ol>
+                <li>Abre la <a href="https://glassfish.org/download" target="_blank" rel="noopener">página oficial de descargas de Eclipse GlassFish</a>.</li>
+                <li>Selecciona la versión estable 8.0.5.</li>
+                <li>Descarga la distribución Full Platform de Jakarta EE 11 en formato ZIP.</li>
+                <li>Guarda el archivo descargado en la carpeta Descargas de Windows.</li>
+            </ol>
+            <p>
+                Esta distribución incluye las funcionalidades necesarias de Jakarta EE para ejecutar
+                aplicaciones web y empresariales.
+            </p>
+            <p class="captura-img"><img class="captura-img" src="imagenes/imagen9.png" alt="Descarga de Eclipse GlassFish"></p>
+        </section>
+
+        <section id="instalacion">
+            <h2>4. Instalar y configurar GlassFish</h2>
+
+            <h3>Descomprimir los archivos</h3>
+            <ol>
+                <li>Localiza el archivo ZIP descargado en la carpeta Descargas.</li>
+                <li>Haz clic derecho sobre el archivo y selecciona <strong>Extraer todo</strong>.</li>
+                <li>Extrae el contenido en la unidad C:.</li>
+            </ol>
+            <p>
+                Se creará la carpeta <code>C:\glassfish8</code>, que contiene los archivos del servidor.
+                Dentro se encuentra el directorio <code>glassfish</code>.
+            </p>
+
+            <h3>Iniciar el servidor</h3>
+            <ol>
+                <li>Abre una terminal CMD de Windows.</li>
+                <li>Accede al directorio de ejecutables de GlassFish:</li>
+            </ol>
+            <pre><code>cd C:\glassfish8\glassfish\bin</code></pre>
+            <ol start="3">
+                <li>Inicia el dominio predeterminado ejecutando:</li>
+            </ol>
+            <pre><code>asadmin.bat start-domain</code></pre>
+            <p>
+                GlassFish iniciará el dominio <code>domain1</code> y utilizará el puerto HTTP 8080.
+                La consola de administración estará disponible en el puerto 4848.
+            </p>
+            <p>
+                Para comprobar que el servidor está funcionando, accede a:
+            </p>
+            <pre><code>http://localhost:4848</code></pre>
+            <p class="captura-img"><img class="captura-img" src="imagenes/imagen10.png" alt="GlassFish iniciado correctamente"></p>
+        </section>
+
+        <section id="prueba">
+            <h2>5. Ejecutar código Java mediante JSP</h2>
+            <ol>
+                <li>Crea una carpeta llamada <code>PruebaJava</code> en la unidad C:.</li>
+                <li>Dentro de esa carpeta, crea un archivo llamado <code>index.jsp</code>.</li>
+                <li>Escribe el siguiente contenido y guarda el archivo:</li>
+            </ol>
+            <pre><code>&lt;%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="es"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;title&gt;Prueba Java&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1&gt;GlassFish funciona correctamente&lt;/h1&gt;
+    &lt;%
+        String mensaje = "Java se está ejecutando en el servidor";
+    %&gt;
+    &lt;p&gt;&lt;%= mensaje %&gt;&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+            <h3>Desplegar la aplicación</h3>
+            <ol>
+                <li>Abre una terminal CMD y crea el archivo WAR de la aplicación:</li>
+            </ol>
+            <pre><code>jar -cvf C:\PruebaJava.war -C C:\PruebaJava .</code></pre>
+            <ol start="2">
+                <li>Despliega la aplicación en GlassFish:</li>
+            </ol>
+            <pre><code>C:\glassfish8\glassfish\bin\asadmin.bat deploy C:\PruebaJava.war</code></pre>
+            <ol start="3">
+                <li>Abre el navegador y accede a la siguiente dirección:</li>
+            </ol>
+            <pre><code>http://localhost:8080/PruebaJava/</code></pre>
+            <p>
+                Debe aparecer el encabezado «GlassFish funciona correctamente» y el mensaje generado
+                mediante código Java. Esto comprueba que GlassFish está ejecutando una página JSP.
+            </p>
+            <p class="captura-img"><img class="captura-img" src="imagenes/imagen11.png" alt="Aplicación JSP ejecutándose en GlassFish"></p>
+
+            <p>
+                Para detener el servidor, vuelve a la terminal y ejecuta:
+            </p>
+            <pre><code>asadmin.bat stop-domain</code></pre>
+        </section>
+
+        <section>
+            <h2>Fuentes oficiales</h2>
+            <ul>
+                <li><a href="https://glassfish.org/" target="_blank" rel="noopener">Página oficial de Eclipse GlassFish</a></li>
+                <li><a href="https://glassfish.org/download" target="_blank" rel="noopener">Descarga de Eclipse GlassFish</a></li>
+                <li><a href="https://glassfish.org/docs/latest/installation-guide.html" target="_blank" rel="noopener">Guía oficial de instalación</a></li>
+                <li><a href="https://glassfish.org/docs/latest/quick-start-guide.html" target="_blank" rel="noopener">Guía oficial de inicio rápido</a></li>
+            </ul>
+        </section>
+    </main>
 </body>
-
 </html>
